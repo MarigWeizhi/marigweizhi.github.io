@@ -32,6 +32,29 @@
   </entry>
   
   <entry>
+    <title>Init-VBlob</title>
+    <link href="http://marigweizhi.github.io/2024/04/08/init-VBlob/"/>
+    <id>http://marigweizhi.github.io/2024/04/08/init-VBlob/</id>
+    <published>2024-04-08T10:15:55.000Z</published>
+    <updated>2024-04-08T11:36:15.017Z</updated>
+    
+    <content type="html"><![CDATA[<p>安装必要环境</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure><p>资源文件路径错误</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;script type=&quot;text/javascript&quot; src=&quot;/marigweizhi.github.io/plugins/highlight/highlight.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">    hljs.initHighlightingOnLoad();</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;安装必要环境&lt;/p&gt;
+&lt;figure class=&quot;highlight plaintext&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;npm install hexo-deployer-git --save&lt;/</summary>
+      
+    
+    
+    
+    
+    <category term="web" scheme="http://marigweizhi.github.io/tags/web/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Hello World</title>
     <link href="http://marigweizhi.github.io/2024/04/08/hello-world/"/>
     <id>http://marigweizhi.github.io/2024/04/08/hello-world/</id>
