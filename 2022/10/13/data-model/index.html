@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><meta name="theme-color" content="#2d4356"><meta name="baidu-site-verification"><title>数据库笔记2-数据模型 | 未知のBlogger</title><link rel="stylesheet" type="text/css" href="/css/style.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.png"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script><meta name="generator" content="Hexo 7.1.1"><link rel="alternate" href="/atom.xml" title="未知のBlogger" type="application/atom+xml">
+</head><link rel="stylesheet" type="text/css" href="/plugins/highlight/atom-one-dark.min.css"><script type="text/javascript" src="/plugins/highlight/highlight.min.js"></script><script>hljs.initHighlightingOnLoad();
+</script><script type="text/javascript" src="/js/ready.js" async></script><link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css"><body class="night"><div class="mobile-head" id="mobile-head"><div class="navbar-icon"><span></span><span></span><span></span></div><div class="navbar-title"><a href="/">LITREILY</a></div><div class="navbar-search"><!--= show a circle here--></div></div><div class="h-wrapper" id="menu"><nav class="h-head box"><div class="m-hdimg"><a class="hdimg img" href="/"><img class="nofancybox" src="/img/profile.jpg" width="128" height="128"></a><h1 class="ttl"><a href="/">未知のBlogger</a></h1></div><p class="m-desc">命里有时终须有,<br>命里无时莫强求！</p><div class="m-nav"><ul><li><span class="dot">●</span><a href="/archives/">归档</a></li><li><span class="dot">●</span><a href="/categories/">分类</a></li><li><span class="dot">●</span><a href="/tags/">标签</a></li><li><span class="dot">●</span><a href="/about/">关于</a></li><li><span class="dot">●</span><a href="/atom.xml">RSS</a></li><li class="m-sch"><form class="form" id="j-formsch" method="get"><input class="txt" type="text" id="local-search-input" name="q" value="搜索" onfocus="if(this.value=='搜索'){this.value='';}" onblur="if(this.value==''){this.value='搜索';}"><input type="text" style="display:none;"></form></li></ul><div id="local-search-result"></div></div></nav></div><div id="back2Top"><a class="fa fa-arrow-up" title="Back to top" href="#"></a></div><div class="box" id="container"><div class="l-wrapper"><div class="l-content box"><div class="l-post l-post-art"><article class="p-art"><div class="p-header box"><h1 class="p-title">数据库笔记2-数据模型</h1><div class="p-info"><span class="p-date"><i class="fa fa-calendar"></i><a href="/2022/10/13/data-model/">2022-10-13</a></span><span class="p-category"><i class="fa fa-folder"></i><a href="/categories/database/">database</a></span><span class="p-view" id="busuanzi_container_page_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_page_pv"></span></span></div></div><div class="p-content"><h1 id="数据模型"><a href="#数据模型" class="headerlink" title="数据模型"></a>数据模型</h1><blockquote>
+<p>是对现实世界数据特征的抽象，是用来描述数据、组织数据、对数据进行操作的；</p>
+</blockquote>
+<p>数据模型分有概念模型和物理模型、逻辑模型：</p>
+<h2 id="概念模型"><a href="#概念模型" class="headerlink" title="概念模型"></a>概念模型</h2><blockquote>
+<p>也称信息模型，按照用户的观念对数据建模，是现实世界到信息世界的第一层抽象，用于数据库设计。</p>
+</blockquote>
+<h3 id="相关术语"><a href="#相关术语" class="headerlink" title="相关术语"></a>相关术语</h3><ul>
+<li>实体<br>客观存在并且可以相互区分的事物</li>
+<li>实体型<br>具有相同特征的实体，用实体名及其属性名集合来抽象和刻画统一类实体</li>
+<li>实体集<br>同一类型的实体集合</li>
+<li>实体与实体间的关系<br>实体之间的关系用菱形表示，中间写上联系名，并与相关实体连接起来，并在无向边上标注（1：1，1：n，n:m）</li>
+</ul>
+<h2 id="数据模型三要素"><a href="#数据模型三要素" class="headerlink" title="数据模型三要素"></a>数据模型三要素</h2><ul>
+<li>数据结构<br>描述数据库组成对象以及<em><strong>对象之间的联系</strong></em>  </li>
+<li>数据操作<br>数据操作是指数据库中的各类对象的<em><strong>实例允许操作的集合</strong></em>，包括操作及有关的操作规则。</li>
+<li>完整性约束<br>一组完整性规则，限制数据库状态以及状态的变化，保证数据<em><strong>正确性、有效性、相容性</strong></em>。</li>
+</ul>
+<h1 id="层次模型-hierarchical-model"><a href="#层次模型-hierarchical-model" class="headerlink" title="层次模型 hierarchical model"></a>层次模型 hierarchical model</h1><h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><blockquote>
+<ul>
+<li>有且仅有一个结点没有双亲结点，这个结点为根节点</li>
+<li>根以外的其他结点有且仅有一个双亲结点</li>
+</ul>
+</blockquote>
+<p>层次模型用树形结构来表示各类实体以及实体之间的联系。  </p>
+<p>层次模型与网状模型统称为格式化模型 </p>
+<h2 id="典型代表"><a href="#典型代表" class="headerlink" title="典型代表"></a>典型代表</h2><p>IBM公司旗下的IMS（Information Management System）</p>
+<h3 id="层次模型优点"><a href="#层次模型优点" class="headerlink" title="层次模型优点"></a>层次模型优点</h3><p>结构简单清晰，查询效率高，提供了良好的完整性支持；</p>
+<h3 id="层次模型缺点"><a href="#层次模型缺点" class="headerlink" title="层次模型缺点"></a>层次模型缺点</h3><p>对非层次的联系，如一个结点有多个双亲，表示起来复杂，对插入删除操作限制多；<br>查询子女结点必须通过双亲结点；<br>由于结构严密，层次命令趋于程序化；  </p>
+<h1 id="网状模型-network-model"><a href="#网状模型-network-model" class="headerlink" title="网状模型 network model"></a>网状模型 network model</h1><h2 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h2><blockquote>
+<ul>
+<li>允许一个以上的结点无双亲；</li>
+<li>一个结点可以有多个双亲结点；</li>
+</ul>
+</blockquote>
+<p>网状模型中要为每个联系命名，并指出与该联系有关的双亲记录和子女记录。  </p>
+<h2 id="典型代表-1"><a href="#典型代表-1" class="headerlink" title="典型代表"></a>典型代表</h2><p>DBTG（Data Base Task Group），也称CODASYL系统（Conference On Data System Language）<br>简化版DBTG ：<br>CullinetSoftware 公司的 IDMS<br>Univac 公司的 DMS100<br>Honeywell 公司的 IDS&#x2F;2<br>HP公司的 IMAGE</p>
+<h3 id="网状模型优点"><a href="#网状模型优点" class="headerlink" title="网状模型优点"></a>网状模型优点</h3><p>能更直接地描述现实世界，并指出与该联系有关的双亲记录和子女记录。</p>
+<h3 id="网状模型缺点"><a href="#网状模型缺点" class="headerlink" title="网状模型缺点"></a>网状模型缺点</h3><p>结构复杂，不利于最终用户掌握；DDL、DML复杂，并要嵌入某一种高级语言中，用户不易使用；</p>
+<h1 id="关系模型-relational-model"><a href="#关系模型-relational-model" class="headerlink" title="关系模型 relational model"></a>关系模型 relational model</h1><blockquote>
+<p>从用户观点看，关系模型由一组关系组成。每个关系的数据结构是一张规范的二维表。</p>
+</blockquote>
+<h2 id="关系模型的一些术语"><a href="#关系模型的一些术语" class="headerlink" title="关系模型的一些术语"></a>关系模型的一些术语</h2><ul>
+<li>关系：一张二维表。</li>
+<li>元组：表中的一行数据。</li>
+<li>属性：二维表中的一列。</li>
+<li>码：用于区分元组的关键字。</li>
+<li>域：数据项的取值范围。</li>
+<li>分量：元组中的一个属性。</li>
+<li>关系模式：描述关系的内容：关系名（属性1、属性2、属性3）</li>
+</ul>
+<p>关系的每一个分量必须是不可再分的。</p>
+<h3 id="关系模型缺点"><a href="#关系模型缺点" class="headerlink" title="关系模型缺点"></a>关系模型缺点</h3><p>由于存储路径对用户透明，查询效率不如格式化模型。</p>
+<h3 id="关系模型优点"><a href="#关系模型优点" class="headerlink" title="关系模型优点"></a>关系模型优点</h3><ul>
+<li>建立在严格的数学概念模型的基础上；  </li>
+<li>结构单一，数据结构简单、清晰、用户易懂易用；</li>
+<li>存储路径对用户透明，具有更高的数据独立性、更好的安全保密性，简化了程序员的工作和数据库开发建立工作；</li>
+</ul>
+</div><div class="p-copyright"><blockquote><div class="p-copyright-author"><span class="p-copyright-key">本文作者：</span><span class="p-copytight-value"><a href="mailto:litreily@163.com">Marig_Weizhi</a></span></div><div class="p-copyright-link"><span class="p-copyright-key">本文链接：</span><span class="p-copytight-value"><a href="/2022/10/13/data-model/">http://marigweizhi.github.io/2022/10/13/data-model/</a></span></div><div class="p-copyright-note"><span class="p-copyright-key">版权声明：</span><span class="p-copytight-value">本博客所有文章除特殊声明外，均采用<a rel="nofollow" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/"> CC BY-NC 4.0 </a>许可协议。转载请注明出处 <a href="http://marigweizhi.github.io">Marig_Weizhi的博客</a>！</span></div></blockquote></div></article><div class="p-info box"><span class="p-tags"><i class="fa fa-tag"></i><a href="/tags/database/">database</a></span></div><aside id="toc"><div class="toc-title">目录</div><nav><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">数据模型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.1.</span> <span class="toc-text">概念模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E6%9C%AF%E8%AF%AD"><span class="toc-number">1.1.1.</span> <span class="toc-text">相关术语</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E4%B8%89%E8%A6%81%E7%B4%A0"><span class="toc-number">1.2.</span> <span class="toc-text">数据模型三要素</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B1%82%E6%AC%A1%E6%A8%A1%E5%9E%8B-hierarchical-model"><span class="toc-number">2.</span> <span class="toc-text">层次模型 hierarchical model</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-number">2.1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B8%E5%9E%8B%E4%BB%A3%E8%A1%A8"><span class="toc-number">2.2.</span> <span class="toc-text">典型代表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%82%E6%AC%A1%E6%A8%A1%E5%9E%8B%E4%BC%98%E7%82%B9"><span class="toc-number">2.2.1.</span> <span class="toc-text">层次模型优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%82%E6%AC%A1%E6%A8%A1%E5%9E%8B%E7%BC%BA%E7%82%B9"><span class="toc-number">2.2.2.</span> <span class="toc-text">层次模型缺点</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BD%91%E7%8A%B6%E6%A8%A1%E5%9E%8B-network-model"><span class="toc-number">3.</span> <span class="toc-text">网状模型 network model</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-1"><span class="toc-number">3.1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B8%E5%9E%8B%E4%BB%A3%E8%A1%A8-1"><span class="toc-number">3.2.</span> <span class="toc-text">典型代表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%8A%B6%E6%A8%A1%E5%9E%8B%E4%BC%98%E7%82%B9"><span class="toc-number">3.2.1.</span> <span class="toc-text">网状模型优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%8A%B6%E6%A8%A1%E5%9E%8B%E7%BC%BA%E7%82%B9"><span class="toc-number">3.2.2.</span> <span class="toc-text">网状模型缺点</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B-relational-model"><span class="toc-number">4.</span> <span class="toc-text">关系模型 relational model</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9C%AF%E8%AF%AD"><span class="toc-number">4.1.</span> <span class="toc-text">关系模型的一些术语</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B%E7%BC%BA%E7%82%B9"><span class="toc-number">4.1.1.</span> <span class="toc-text">关系模型缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B%E4%BC%98%E7%82%B9"><span class="toc-number">4.1.2.</span> <span class="toc-text">关系模型优点</span></a></li></ol></li></ol></li></ol></nav></aside></div><section class="p-ext"><div class="l-pager l-pager-dtl box"><a class="prev" href="/2022/10/15/relationship-model/">&lt; 数据库笔记3-关系模型</a><a class="next" href="/2022/09/30/databse-concept/">数据库笔记1-基本概念 &gt;</a></div></section><footer><p>Copyright © 2016 - 2024 <a href="/." rel="nofollow">未知のBlogger</a> | <strong><a rel="nofollow" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></strong><br><span id="busuanzi_container_site_uv"><i class="fa fa-user"></i><span id="busuanzi_value_site_uv"></span></span> <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_site_pv"></span></span> | Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a>Theme with<a rel="nofollow" target="_blank" href="https://github.com/litreily/snark-hexo"> snark.</a></p></footer></div></div></div><script type="text/javascript" src="/js/search.js"></script><script type="text/javascript" src="/js/top.js"></script><script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+    search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.1" async></script></body></html>

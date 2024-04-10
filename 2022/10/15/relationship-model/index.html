@@ -1,0 +1,617 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><meta name="theme-color" content="#2d4356"><meta name="baidu-site-verification"><title>数据库笔记3-关系模型 | 未知のBlogger</title><link rel="stylesheet" type="text/css" href="/css/style.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.png"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script><meta name="generator" content="Hexo 7.1.1"><link rel="alternate" href="/atom.xml" title="未知のBlogger" type="application/atom+xml">
+</head><link rel="stylesheet" type="text/css" href="/plugins/highlight/atom-one-dark.min.css"><script type="text/javascript" src="/plugins/highlight/highlight.min.js"></script><script>hljs.initHighlightingOnLoad();
+</script><script type="text/javascript" src="/js/ready.js" async></script><link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css"><body class="night"><div class="mobile-head" id="mobile-head"><div class="navbar-icon"><span></span><span></span><span></span></div><div class="navbar-title"><a href="/">LITREILY</a></div><div class="navbar-search"><!--= show a circle here--></div></div><div class="h-wrapper" id="menu"><nav class="h-head box"><div class="m-hdimg"><a class="hdimg img" href="/"><img class="nofancybox" src="/img/profile.jpg" width="128" height="128"></a><h1 class="ttl"><a href="/">未知のBlogger</a></h1></div><p class="m-desc">命里有时终须有,<br>命里无时莫强求！</p><div class="m-nav"><ul><li><span class="dot">●</span><a href="/archives/">归档</a></li><li><span class="dot">●</span><a href="/categories/">分类</a></li><li><span class="dot">●</span><a href="/tags/">标签</a></li><li><span class="dot">●</span><a href="/about/">关于</a></li><li><span class="dot">●</span><a href="/atom.xml">RSS</a></li><li class="m-sch"><form class="form" id="j-formsch" method="get"><input class="txt" type="text" id="local-search-input" name="q" value="搜索" onfocus="if(this.value=='搜索'){this.value='';}" onblur="if(this.value==''){this.value='搜索';}"><input type="text" style="display:none;"></form></li></ul><div id="local-search-result"></div></div></nav></div><div id="back2Top"><a class="fa fa-arrow-up" title="Back to top" href="#"></a></div><div class="box" id="container"><div class="l-wrapper"><div class="l-content box"><div class="l-post l-post-art"><article class="p-art"><div class="p-header box"><h1 class="p-title">数据库笔记3-关系模型</h1><div class="p-info"><span class="p-date"><i class="fa fa-calendar"></i><a href="/2022/10/15/relationship-model/">2022-10-15</a></span><span class="p-category"><i class="fa fa-folder"></i><a href="/categories/database/">database</a></span><span class="p-view" id="busuanzi_container_page_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_page_pv"></span></span></div></div><div class="p-content"><h1 id="关系模型"><a href="#关系模型" class="headerlink" title="关系模型"></a>关系模型</h1><blockquote>
+<p>关系模型由：关系数据结构、关系操作集合和关系完整性约束三部分组成。  </p>
+</blockquote>
+<h3 id="关系模式"><a href="#关系模式" class="headerlink" title="关系模式"></a>关系模式</h3><blockquote>
+<p>对关系的描述，R（D,U,Dom,F）,R 为关系名，U为属性集合，D为属性组U中属性的域，Dom为属性向域的映像集合，F为属性间数据的依赖关系的集合。相当于关系数据库的型。</p>
+</blockquote>
+<h3 id="关系"><a href="#关系" class="headerlink" title="关系"></a>关系</h3><blockquote>
+<p>关系模式在某一时刻的状态或内容，相当于关系数据库的值。</p>
+</blockquote>
+<h4 id="关系数据库"><a href="#关系数据库" class="headerlink" title="关系数据库"></a>关系数据库</h4><blockquote>
+<p>有值和型之分，型也称关系数据库模式，是对关系数据库的描述，包括若干域的定义和这些域上定义的若干关系模式。值为这些关系模式在某一时刻对应的关系的集合，通常成称为关系数据库。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>关系模式</th>
+<th>关系</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>对关系的描述</td>
+<td>关系模式在某一时刻的状态或内容</td>
+</tr>
+<tr>
+<td>静态的、稳定的</td>
+<td>动态的、随时间不断变化的</td>
+</tr>
+</tbody></table>
+<h1 id="关系代数"><a href="#关系代数" class="headerlink" title="关系代数"></a>关系代数</h1><blockquote>
+<p>传统关系代数：并、差、交、笛卡尔积<br>专门的关系运算符：选择、投影、连接、除<br>其中 并、差、笛卡尔积、选择、投影为五种基本关系代数运算，其他三种：交、连接、除可以由基本运算来表达，不增加语言能力，但能简化表达。  </p>
+</blockquote>
+<h2 id="并（union）"><a href="#并（union）" class="headerlink" title="并（union）"></a>并（union）</h2><blockquote>
+<p>关系R并关系S得关系T，T中的元组属于R或S  </p>
+</blockquote>
+<h2 id="差（except）"><a href="#差（except）" class="headerlink" title="差（except）"></a>差（except）</h2><blockquote>
+<p>关系R与关系S的差，结果为关系T，T中的元组属于R并且不属于S  </p>
+</blockquote>
+<h2 id="交（intersection）"><a href="#交（intersection）" class="headerlink" title="交（intersection）"></a>交（intersection）</h2><blockquote>
+<p>关系R与关系S的交集，结果为关系T，T中的元组同时属于R和S  </p>
+</blockquote>
+<h2 id="笛卡尔积（cartesian-product）"><a href="#笛卡尔积（cartesian-product）" class="headerlink" title="笛卡尔积（cartesian product）"></a>笛卡尔积（cartesian product）</h2><blockquote>
+<p>此处指广义笛卡尔积，因为此处元素是元组。<br>设R有n列k1个元组，S有m列k2个元组，RxS&#x3D;T。则T中有（n+m）列，（k1*k2）个元组，且元组的前n列为R的元组，后m列为S的元组。  </p>
+</blockquote>
+<h2 id="选择（selection）"><a href="#选择（selection）" class="headerlink" title="选择（selection）"></a>选择（selection）</h2><blockquote>
+<p>又称为限制（restriction），<code>选择行</code>,关系R在选择条件B下进行选择操作得到关系T，则T中的元组均满足条件B，R个属性个数不变。</p>
+</blockquote>
+<h2 id="投影（projection）"><a href="#投影（projection）" class="headerlink" title="投影（projection）"></a>投影（projection）</h2><blockquote>
+<p><code>选择列</code>，关系R中选取若干属性组成新的关系，并去除重复元组。</p>
+</blockquote>
+<h2 id="连接（join）"><a href="#连接（join）" class="headerlink" title="连接（join）"></a>连接（join）</h2><blockquote>
+<p>关系R和关系S，在基于条件B的情况下进行连接操作得到关系T。等价于关系（RxS）在条件B下进行选择操作。</p>
+</blockquote>
+<ul>
+<li>连接条件的比较运算符为<code>=</code>称为等值连接，它是从（RxS）中选择出指定属性值相同的元组。</li>
+<li>自然连接是一种特殊的等值连接，其比较分量必须是同名属性组，并且结果将重复的属性列去掉。</li>
+<li>自然连接过程中，因为比较分量不一致的元组被舍弃，该元组称为悬浮元组（dangling tuple）</li>
+<li></li>
+</ul>
+<h2 id="除运算（division）"><a href="#除运算（division）" class="headerlink" title="除运算（division）"></a>除运算（division）</h2><blockquote>
+<p>设关系R除以关系S的结果为关系T，则<code>T包含所有在R中且不在S中的属性和值，且T的元组与S的元组的所有组合属于R</code></p>
+</blockquote>
+<h3 id="象集（images-set）"><a href="#象集（images-set）" class="headerlink" title="象集（images set）"></a>象集（images set）</h3><blockquote>
+<p>设关系R（X，Y），s是X中的一个值，则s在R中的象集定义为：R中属性组X上，值为s的所有元组在Y分量上的集合。</p>
+</blockquote>
+<h3 id="用象集定义除运算"><a href="#用象集定义除运算" class="headerlink" title="用象集定义除运算"></a>用象集定义除运算</h3><blockquote>
+<p>设关系 R（X，Y）和 S（Y，Z），其中R的Y属性和S的Y属性可以有不同属性名，但是必须出自相同域集。<br>R除以S得到关系P，P是R中满足以下条件的元组在X属性上的投影：元组在X上的分量值x的<code>象集Yx包含S在Y上投影的集合</code>。</p>
+</blockquote>
+<ul>
+<li><p><em><strong>例1:是查询至少选择1号和3号课程的学生号码Sno。</strong></em></p>
+<blockquote>
+<p>首先建立一个临时关系K，K中一个属性（Cno），两个元组（1，3）<br>则问题的答案为：从关系SC中对Sno和Cno投影，然后除以关系K<br>原理：SC在Sno和Cno的投影，然后逐一求出各个Sno的象集，并依次检查这些象集是否包含K。</p>
+</blockquote>
+</li>
+<li><p><em><strong>例2</strong></em><br><em><strong>R</strong></em></p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a1</td>
+<td>b1</td>
+<td>c2</td>
+</tr>
+<tr>
+<td>a2</td>
+<td>b3</td>
+<td>c7</td>
+</tr>
+<tr>
+<td>a3</td>
+<td>b4</td>
+<td>c6</td>
+</tr>
+<tr>
+<td>a1</td>
+<td>b2</td>
+<td>c3</td>
+</tr>
+<tr>
+<td>a4</td>
+<td>b6</td>
+<td>c6</td>
+</tr>
+<tr>
+<td>a2</td>
+<td>b2</td>
+<td>c3</td>
+</tr>
+<tr>
+<td>a1</td>
+<td>b2</td>
+<td>c1</td>
+</tr>
+</tbody></table>
+<p><em><strong>S</strong></em></p>
+<table>
+<thead>
+<tr>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>b1</td>
+<td>c2</td>
+<td>d1</td>
+</tr>
+<tr>
+<td>b2</td>
+<td>c1</td>
+<td>d1</td>
+</tr>
+<tr>
+<td>b2</td>
+<td>c3</td>
+<td>d2</td>
+</tr>
+</tbody></table>
+<p><em><strong>R除以S</strong></em></p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a1</td>
+</tr>
+</tbody></table>
+<ul>
+<li>A表中a1的象集为{（b1,c2），（b2，c3），（b2，c1）}  </li>
+<li>S表在B、C分量投影的集合为{（b1,c2），（b2，c3），（b2，c1）}  </li>
+<li>a1的象集包含了S表在B、C分量投影的集合，因此a1满足条件。a2、a3、a4象集不满足条件，因此结果只有a1</li>
+</ul>
+<h1 id="关系演算"><a href="#关系演算" class="headerlink" title="关系演算"></a>关系演算</h1><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wkfvawl/p/11031826.html">关系演算参考博客</a></p>
+<h1 id="查询语言"><a href="#查询语言" class="headerlink" title="查询语言"></a>查询语言</h1><h1 id="SQL（DDL、DML）"><a href="#SQL（DDL、DML）" class="headerlink" title="SQL（DDL、DML）"></a>SQL（DDL、DML）</h1><h3 id="SQL特点"><a href="#SQL特点" class="headerlink" title="SQL特点:"></a>SQL特点:</h3><ol>
+<li><p>综合统一  </p>
+<blockquote>
+<p>SQL集数据定义语言、数据操纵语言、数据控制语言的功能于一体，语言风格统一，可以独立完成数据库生命周期中的全部活动。</p>
+</blockquote>
+</li>
+<li><p>高度非过程化  </p>
+<blockquote>
+<p>只要提出”做什么”，无需指定”怎么做”，存储路径的选择和SQL的操作过程由系统自动完成，提高数据独立性，减轻用户负担。</p>
+</blockquote>
+</li>
+<li><p>面向集合的操作方式</p>
+<blockquote>
+<p>操作对象、查找结果、插入、删除、更新的对象都可以是元组的集合。</p>
+</blockquote>
+</li>
+<li><p>以同一种语法结构提供多种使用方式  </p>
+<blockquote>
+<p>支持嵌入其他高级语言</p>
+</blockquote>
+</li>
+<li><p>语言简洁、易学易用  </p>
+<blockquote>
+<p>接近英语口语，语言简洁。</p>
+</blockquote>
+</li>
+</ol>
+<h2 id="DDL（-Data-Definition-Language）"><a href="#DDL（-Data-Definition-Language）" class="headerlink" title="DDL（(Data Definition Language）"></a>DDL（(Data Definition Language）</h2><blockquote>
+<p>数据定义语言是用来定义数据库外模式、模式、内模式的语言</p>
+</blockquote>
+<h3 id="模式"><a href="#模式" class="headerlink" title="模式"></a>模式</h3><ul>
+<li>创建<br>create schema &lt;模式名&gt; authorization &lt;用户名&gt;[&lt;表定义字句&gt;|&lt;视图定义字句&gt;|&lt;授权定义字句&gt;]</li>
+<li>删除<br>drop schema &lt;模式名&gt; &lt;cascade|restrict&gt;<br>cascade: 级联，删除模式的同时将该模式中的所有数据库对象全部删除<br>restrict：限制，没有任何下属的对象时才能执行</li>
+</ul>
+<h3 id="表"><a href="#表" class="headerlink" title="表"></a>表</h3><ul>
+<li>创建<br>create table &lt;表名&gt;<br>(&lt;列名&gt; &lt;数据类型&gt; [&lt;列级完整性约束条件&gt;],<br>&lt;列名&gt; &lt;数据类型&gt; [&lt;列级完整性约束条件&gt;],<br>…<br>[&lt;表级完整性约束条件&gt;]<br>)</li>
+</ul>
+<h4 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h4><table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>char(n)</td>
+<td>定长字符串</td>
+</tr>
+<tr>
+<td>varchar(n)</td>
+<td>变长字符串</td>
+</tr>
+<tr>
+<td>int</td>
+<td>整数（4B）</td>
+</tr>
+<tr>
+<td>smallint</td>
+<td>短整数（2B）</td>
+</tr>
+<tr>
+<td>bigint</td>
+<td>大整数（8B）</td>
+</tr>
+<tr>
+<td>clob</td>
+<td>字符串大对象</td>
+</tr>
+<tr>
+<td>blob</td>
+<td>二进制大对象</td>
+</tr>
+<tr>
+<td>numeric(p,d)</td>
+<td>定点数，p位数，小数点后又d位数</td>
+</tr>
+<tr>
+<td>real</td>
+<td>取决用户机器精度的单精度浮点数</td>
+</tr>
+<tr>
+<td>double recision</td>
+<td>取决于机器精度的双精度浮点数</td>
+</tr>
+<tr>
+<td>float(n)</td>
+<td>可选精度浮点数</td>
+</tr>
+<tr>
+<td>date</td>
+<td>日期，YYYY-MM-DD</td>
+</tr>
+<tr>
+<td>time</td>
+<td>某一日的时间 HH:MM:SS</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>时间戳</td>
+</tr>
+<tr>
+<td>interval</td>
+<td>时间间隔</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>创建模式后创建表<br>create table “模式A”.student (…)</p>
+</li>
+<li><p>创建模式时创建表<br>create schema “模式A” authorization user1 crate table student(…)</p>
+</li>
+<li><p>设置所属模式，创建表自动分配<br>show search_path;&#x2F;&#x2F; 查看搜索路径<br>set search_path to “模式A”,public;</p>
+</li>
+<li><p>修改表<br>alter table &lt;表名&gt;<br>[add [column] &lt;新列名&gt; &lt;数据类型&gt; [完整性约束]]<br>[add &lt;表级完整性约束&gt;]<br>[drop [column] &lt;列名&gt; [cascade|restrict]]<br>[drop constraint &lt;完整性约束名&gt; [cascade|restrict]]<br>[alter column &lt;列名&gt; &lt;数据类型&gt;] &#x2F;&#x2F; 修改数据类型</p>
+</li>
+<li><p>删除表<br>drop table table &lt;表名&gt; [cascade|restrict]</p>
+</li>
+</ul>
+<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><ul>
+<li><p>创建索引<br>create [unique] [cluster] index &lt;索引名&gt; on &lt;表名&gt;(&lt;列名&gt;[&lt;次序&gt;][,&lt;列名&gt;[&lt;次序&gt;]]…)<br>一个索引可以建立在一个表的一个列或多个列上，排列次序:默认asc升序，desc降序<br>unique:表明此索引的每一个索引值只对应唯一的数据记录<br>cluster:聚簇索引  </p>
+</li>
+<li><p>为SC表建立以学号升序，课程号降序的唯一索引<br>create unique index scno on sc(sno asc,cno desc)</p>
+</li>
+<li><p>修改索引<br>alter index &lt;旧索引名&gt; rename to &lt;新索引名&gt;</p>
+</li>
+<li><p>删除索引<br>drop index &lt;索引名&gt;</p>
+</li>
+</ul>
+<h3 id="数据字典"><a href="#数据字典" class="headerlink" title="数据字典"></a>数据字典</h3><blockquote>
+<p>关系数据库的系统表，记录了所有定义信息：<br>关系模式、视图、索引、完整性约束、用户权限、统计信息等。<br>在执行DDL时，本质是在操作数据字典。<br>进行查询优化和处理时，数据字典的内容是重要依据。  </p>
+</blockquote>
+<h2 id="DML（Data-Manipulation-Language）"><a href="#DML（Data-Manipulation-Language）" class="headerlink" title="DML（Data Manipulation Language）"></a>DML（Data Manipulation Language）</h2><blockquote>
+<p>数据操纵语言是用来对数据库进行查询插入删除和修改的语言。</p>
+</blockquote>
+<h3 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h3><p>select [all&#x2F;distinct] &lt;目标列表达式&gt;,&lt;目标列表达式&gt;…<br>from &lt;表名&gt;,[select 子句] [as 别名]…<br>where &lt;条件表达式&gt;<br>group by &lt;列名&gt; [having &lt;条件表达式&gt;]<br>order by &lt;列名&gt; [asc&#x2F;desc]   </p>
+<p><em><strong>where 条件表达式常用的查询条件</strong></em></p>
+<table>
+<thead>
+<tr>
+<th>查询条件</th>
+<th>谓词</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>比较</td>
+<td>&#x3D;,&gt;,&lt;,&gt;&#x3D;,&lt;&#x3D;,!&#x3D;,&lt;&gt;,!&gt;,!&lt;;Not + 其他比较运算符</td>
+</tr>
+<tr>
+<td>确定范围</td>
+<td>between and,not between end</td>
+</tr>
+<tr>
+<td>确定集合</td>
+<td>in,not in</td>
+</tr>
+<tr>
+<td>字符匹配</td>
+<td>like,not like</td>
+</tr>
+<tr>
+<td>空值</td>
+<td>IS NULL,IS NOT NULL</td>
+</tr>
+<tr>
+<td>多重条件</td>
+<td>and,or,not</td>
+</tr>
+</tbody></table>
+<p><em><strong>集合查询</strong></em></p>
+<ul>
+<li>union（并）</li>
+<li>intersect（交）</li>
+<li>except(差)</li>
+</ul>
+<h4 id="经典案例"><a href="#经典案例" class="headerlink" title="经典案例"></a>经典案例</h4><ul>
+<li>查询选了所有课程的学生姓名</li>
+</ul>
+<pre><code class="sql">-- 查询这样的学生，条件是每个课程这个学生都选了
+-- 关系演算
+RANGE   Course  CX
+RANGE   SC      SCX
+GET W(Student.Sname): 全部 CX 存在 SCX(SCX.Sno=Student.Sno ∧ SCX.Cno=CX.Cno)
+
+-- 由于SQL没有全称量词 for all，因此可以转成等价的存在量词
+`for all A == not exists not A`
+-- 即转换成以下等价逻辑
+
+-- 查询这样的学生，条件是不存在这样的课程这个学生未选
+-- 关系演算
+RANGE   Course  CX
+RANGE   SC      SCX
+GET W(Student.Sname): 不存在 CX 不存在 SCX(SCX.Sno=Student.Sno ∧ SCX.Cno=CX.Cno)
+
+-- SQL
+select sname 
+from student where not exists(
+    select * from course where not exists(
+        select * from sc where sc.sno=student.sno 
+            and course.cno = sc.cno))
+
+-- 另一个思路
+-- 查询这样的学生，条件是该学生选课数等于总课数
+select sname from student
+where sno in (
+    select sno from sc 
+    group by cno 
+    having count(sno) = (select count(*) from course))
+
+-- 关系代数
+π sname ((π cno,sno(sc) ÷ π cno(course)) ⋈ student)
+</code></pre>
+<ul>
+<li>查询至少选修了学生201215122选修的全部课程的学生号码</li>
+</ul>
+<pre><code class="sql">-- 查询这样的学生，条件是对于全部课程，若学生201215122选了，则该学生也选了
+-- 关系演算
+RANGE   Course  CX
+RANGE   SC      SCX
+RANGE   SC      SCY
+GET W(Student.sno): 
+任意CX(存在 SCX(SCX.sno = &#39;201215122&#39; ∧ SCX.cno = CX.cno ) =&gt; 存在 SCY(Student.sno = SCY.sno ∧ SCY.cno = CX.cno))
+
+-- 通过逻辑蕴含的等价形式`p =&gt; q` == `not p V q`，转换上述逻辑。
+-- 查询这样的学生，条件是对于全部课程，学生201215122没选或者该学生选了
+RANGE   Course  CX
+RANGE   SC      SCX
+RANGE   SC      SCY
+GET W(Student.sno): 
+任意CX(不存在 SCX(SCX.sno = &#39;201215122&#39; ∧ SCX.cno = CX.cno ) V 存在 SCY(Student.sno = SCY.sno ∧ SCY.cno = CX.cno))
+
+-- 再将全称量词转换为存在量词
+-- 查询这样的学生，条件是不存在这样的课程，学生201215122选了并且该学生没选
+RANGE   Course  CX
+RANGE   SC      SCX
+RANGE   SC      SCY
+GET W(Student.sno): 
+不存在 CX(存在 SCX(SCX.sno = &#39;201215122&#39; ∧ SCX.cno = CX.cno ) ∧ 不存在 SCY(Student.sno = SCY.sno ∧ SCY.cno = CX.cno))
+
+-- 翻译成SQL
+-- 最外层循环遍历学生x
+-- 不存在这样的课，y中存在，x没选
+select distinct sno from sc scx
+where not exists(  -- 不存在这样的课
+    -- 201215122所选的课程scy.cno
+    select * from sc scy  
+    where scy.sno = &#39;201215122&#39;
+    and not exists(select * from sc scz     -- scy.cno中x没修，这里的z相当于x
+                    where scx.sno = scz.sno
+                    and scy.cno = scz.cno)
+);
+
+-- 关系代数
+π sno,cno(sc) ÷ π cno(σ sno=201215122 (student ⋈ sc))
+</code></pre>
+<p><em><strong>完整栗子</strong></em></p>
+<pre><code class="sql">use study;
+drop table if EXISTS  sc ;
+drop table if EXISTS  student ;
+drop table if EXISTS  course ;
+
+create table  if not EXISTS student(
+sno int PRIMARY key,
+sname VARCHAR(20)
+);
+
+create table if not EXISTS course (
+cno int PRIMARY key,
+cname VARCHAR(20)
+
+);
+
+create table if not EXISTS sc(
+sno int,
+cno int,
+score int,
+PRIMARY key (sno,cno),
+FOREIGN KEY(sno) REFERENCES student(sno),
+FOREIGN KEY(cno) REFERENCES course(cno)
+);
+
+INSERT INTO `course`(`cno`, `cname`) VALUES (1, &#39;java&#39;);
+INSERT INTO `course`(`cno`, `cname`) VALUES (2, &#39;c++&#39;);
+INSERT INTO `course`(`cno`, `cname`) VALUES (3, &#39;go&#39;);
+INSERT INTO `course`(`cno`, `cname`) VALUES (4, &#39;php&#39;);
+INSERT INTO `sc`(`sno`, `cno`, `score`) VALUES (1, 1, 100);
+INSERT INTO `sc`(`sno`, `cno`, `score`) VALUES (1, 2, 88);
+INSERT INTO `sc`(`sno`, `cno`, `score`) VALUES (2, 1, 90);
+INSERT INTO `sc`(`sno`, `cno`, `score`) VALUES (2, 3, 88);
+INSERT INTO `sc`(`sno`, `cno`, `score`) VALUES (3, 1, 22);
+INSERT INTO `sc`(`sno`, `cno`, `score`) VALUES (3, 2, 89);
+INSERT INTO `sc`(`sno`, `cno`, `score`) VALUES (3, 3, 56);
+INSERT INTO `sc`(`sno`, `cno`, `score`) VALUES (3, 4, 55);
+INSERT INTO `sc`(`sno`, `cno`, `score`) VALUES (4, 1, 99);
+INSERT INTO `sc`(`sno`, `cno`, `score`) VALUES (4, 2, 99);
+INSERT INTO `sc`(`sno`, `cno`, `score`) VALUES (4, 3, 66);
+INSERT INTO `sc`(`sno`, `cno`, `score`) VALUES (4, 4, 99);
+INSERT INTO `student`(`sno`, `sname`) VALUES (1, &#39;张三&#39;);
+INSERT INTO `student`(`sno`, `sname`) VALUES (2, &#39;李四&#39;);
+INSERT INTO `student`(`sno`, `sname`) VALUES (3, &#39;王五&#39;);
+INSERT INTO `student`(`sno`, `sname`) VALUES (4, &#39;周六&#39;);
+
+select distinct sno from sc scx
+where not exists(
+    select * from sc scy
+    where scy.sno = &#39;1&#39; 
+    and not exists(select * from sc scz
+                    where scx.sno = scz.sno 
+                    and scy.cno = scz.cno)
+);
+-- 上述例子的子查询
+select * from sc scy
+    where scy.sno = &#39;1&#39; 
+    and not exists(select * from sc scz
+                    where &#39;4&#39; = scz.sno 
+                    and scy.cno = scz.cno)
+
+
+select sname from student x
+where not exists(
+    select * from course y
+    where not exists(select * from sc z
+                    where x.sno = z.sno and z.cno = y.cno)
+)
+</code></pre>
+<h3 id="数据更新"><a href="#数据更新" class="headerlink" title="数据更新"></a>数据更新</h3><h4 id="1-插入元组"><a href="#1-插入元组" class="headerlink" title="1.插入元组"></a>1.插入元组</h4><pre><code class="sql">insert 
+[into] &lt;表名&gt;[(属性1，属性2...)]
+values(&lt;常量1&gt;,&lt;常量2&gt;...)
+</code></pre>
+<blockquote>
+<p>into子句中属性的顺序可以自定义，也可以不写，默认为表定义的顺序，values提供的值必须与into中一致</p>
+</blockquote>
+<h4 id="2-修改数据"><a href="#2-修改数据" class="headerlink" title="2.修改数据"></a>2.修改数据</h4><pre><code class="sql">update &lt;表名&gt;
+set &lt;列名1&gt;=&lt;表达式1&gt;,&lt;列名2&gt;=&lt;表达式2&gt;...
+where &lt;条件&gt;
+</code></pre>
+<h4 id="3-删除数据"><a href="#3-删除数据" class="headerlink" title="3.删除数据"></a>3.删除数据</h4><pre><code class="sql">delete
+from &lt;表名&gt;
+where &lt;条件&gt;
+</code></pre>
+<h3 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h3><pre><code class="sql">create view is_student as (select ...) [with check option]
+</code></pre>
+<p>with check option: 表示进行删除、插入、修改操作时候，会检查新的元组是否满足视图的where条件</p>
+<ul>
+<li>视图消解：用户对视图的查询，数据库系统基于查询语句和视图的定义语句合并，形成新的完整的查询语句</li>
+<li>一般行列子集视图可更新</li>
+<li>若设视图设涉及多表、distinct、group、聚集函数等不允许更新</li>
+</ul>
+<h4 id="视图的作用"><a href="#视图的作用" class="headerlink" title="视图的作用"></a>视图的作用</h4><ul>
+<li>简化用户操作</li>
+<li>可以从不同角度看同一数据</li>
+<li>对重构数据库提供一定程度的逻辑独立性</li>
+<li>视图可以对机密数据提供安全保护</li>
+<li>适当利用视图可以更清晰地表达</li>
+</ul>
+<h2 id="授权"><a href="#授权" class="headerlink" title="授权"></a>授权</h2><p>用户权限两要素：数据库对象、操作类型   </p>
+<table>
+<thead>
+<tr>
+<th>对象类型</th>
+<th>对象</th>
+<th>操作类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据库模式</td>
+<td>模式</td>
+<td>create schema</td>
+</tr>
+<tr>
+<td>数据库模式</td>
+<td>基本表</td>
+<td>create table, alter table</td>
+</tr>
+<tr>
+<td>数据库模式</td>
+<td>视图</td>
+<td>create view</td>
+</tr>
+<tr>
+<td>数据库模式</td>
+<td>索引</td>
+<td>create index</td>
+</tr>
+<tr>
+<td>数据</td>
+<td>基本表和视图</td>
+<td>select,insert,update,delete,references,all privileges</td>
+</tr>
+<tr>
+<td>数据</td>
+<td>属性列</td>
+<td>select,insert,update,references,all privileges</td>
+</tr>
+</tbody></table>
+<h3 id="grant语句"><a href="#grant语句" class="headerlink" title="grant语句"></a>grant语句</h3><p>grant &lt;权限&gt;[,&lt;权限&gt;]…<br>on &lt;对象类型&gt; &lt;对象名&gt;[,&lt;对象类型&gt; &lt;对象名&gt;]…<br>to &lt;用户&gt;[,&lt;用户&gt;]…<br>[with grant option];</p>
+<p>如果指定了<code>with grant option</code>则获得该权限的用户可以把这种权限授予给其他用户。  </p>
+<ul>
+<li><em>把学生表的查询权限给U1</em></li>
+</ul>
+<pre><code class="sql">grant select
+on table student
+to u1;
+</code></pre>
+<ul>
+<li><em>把学生表的全部权限给U2，并运行u2授予给其他人</em></li>
+</ul>
+<pre><code class="sql">grant all privileges
+on table student
+to u2
+with grant option;
+</code></pre>
+<h3 id="revoke语句"><a href="#revoke语句" class="headerlink" title="revoke语句"></a>revoke语句</h3><p>revoke &lt;权限&gt;[,&lt;权限&gt;]…<br>on &lt;对象类型&gt; &lt;对象名&gt;[,&lt;对象类型&gt; &lt;对象名&gt;]…<br>from &lt;用户&gt;[,&lt;用户&gt;]…  [cascade|restrict]  </p>
+<ul>
+<li><em>把u4修改学生学号的权限收回</em></li>
+</ul>
+<pre><code class="sql">revoke update(sno)
+on table student
+from u4;
+</code></pre>
+<ul>
+<li><em>收回所有用户对SC的查询权限</em></li>
+</ul>
+<pre><code class="sql">revoke select
+on table sc
+from public;
+</code></pre>
+<h3 id="角色"><a href="#角色" class="headerlink" title="角色"></a>角色</h3><ul>
+<li><p>创建<br>create role &lt;角色名&gt;   </p>
+</li>
+<li><p>授权<br>grant 权限 on 对象类型 对象名  to 角色名  </p>
+</li>
+<li><p>角色1和角色2的权限授予给角色3<br>grant 角色1 角色2 to 角色3 [with admin option]<br><code>with admin option</code>则允许角色3继续授予该权限给其他角色  </p>
+</li>
+<li><p>收回<br>revoke 权限 on 对象类型 对象名<br>from 角色名</p>
+</li>
+</ul>
+<h1 id="例题"><a href="#例题" class="headerlink" title="例题"></a>例题</h1><h3 id="关系模型的三个组成部分"><a href="#关系模型的三个组成部分" class="headerlink" title="关系模型的三个组成部分"></a>关系模型的三个组成部分</h3><blockquote>
+<p>关系数据结构、关系数据操作、关系完整性约束</p>
+</blockquote>
+<h3 id="简述关系数据库语言的特点和分类"><a href="#简述关系数据库语言的特点和分类" class="headerlink" title="简述关系数据库语言的特点和分类"></a>简述关系数据库语言的特点和分类</h3><blockquote>
+<ul>
+<li>关系代数语言</li>
+<li>关系演算语言：元组关系演算语言ALPHA、域关系演算语言QBE(Query By Example)</li>
+<li>SQL：具有关系代数和关系演算语言的双重特点</li>
+</ul>
+<p>共同特点是：语言具有完备的表达能力，是非过程化的集合操作语言，功能强，能嵌入高级语言中</p>
+</blockquote>
+</div><div class="p-copyright"><blockquote><div class="p-copyright-author"><span class="p-copyright-key">本文作者：</span><span class="p-copytight-value"><a href="mailto:litreily@163.com">Marig_Weizhi</a></span></div><div class="p-copyright-link"><span class="p-copyright-key">本文链接：</span><span class="p-copytight-value"><a href="/2022/10/15/relationship-model/">http://marigweizhi.github.io/2022/10/15/relationship-model/</a></span></div><div class="p-copyright-note"><span class="p-copyright-key">版权声明：</span><span class="p-copytight-value">本博客所有文章除特殊声明外，均采用<a rel="nofollow" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/"> CC BY-NC 4.0 </a>许可协议。转载请注明出处 <a href="http://marigweizhi.github.io">Marig_Weizhi的博客</a>！</span></div></blockquote></div></article><div class="p-info box"><span class="p-tags"><i class="fa fa-tag"></i><a href="/tags/database/">database</a></span></div><aside id="toc"><div class="toc-title">目录</div><nav><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">关系模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.0.1.</span> <span class="toc-text">关系模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB"><span class="toc-number">1.0.2.</span> <span class="toc-text">关系</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">1.0.2.1.</span> <span class="toc-text">关系数据库</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E4%BB%A3%E6%95%B0"><span class="toc-number">2.</span> <span class="toc-text">关系代数</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B6%EF%BC%88union%EF%BC%89"><span class="toc-number">2.1.</span> <span class="toc-text">并（union）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%AE%EF%BC%88except%EF%BC%89"><span class="toc-number">2.2.</span> <span class="toc-text">差（except）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%A4%EF%BC%88intersection%EF%BC%89"><span class="toc-number">2.3.</span> <span class="toc-text">交（intersection）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%9B%E5%8D%A1%E5%B0%94%E7%A7%AF%EF%BC%88cartesian-product%EF%BC%89"><span class="toc-number">2.4.</span> <span class="toc-text">笛卡尔积（cartesian product）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%EF%BC%88selection%EF%BC%89"><span class="toc-number">2.5.</span> <span class="toc-text">选择（selection）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%95%E5%BD%B1%EF%BC%88projection%EF%BC%89"><span class="toc-number">2.6.</span> <span class="toc-text">投影（projection）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5%EF%BC%88join%EF%BC%89"><span class="toc-number">2.7.</span> <span class="toc-text">连接（join）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%A4%E8%BF%90%E7%AE%97%EF%BC%88division%EF%BC%89"><span class="toc-number">2.8.</span> <span class="toc-text">除运算（division）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B1%A1%E9%9B%86%EF%BC%88images-set%EF%BC%89"><span class="toc-number">2.8.1.</span> <span class="toc-text">象集（images set）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E8%B1%A1%E9%9B%86%E5%AE%9A%E4%B9%89%E9%99%A4%E8%BF%90%E7%AE%97"><span class="toc-number">2.8.2.</span> <span class="toc-text">用象集定义除运算</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E6%BC%94%E7%AE%97"><span class="toc-number">3.</span> <span class="toc-text">关系演算</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E8%AF%AD%E8%A8%80"><span class="toc-number">4.</span> <span class="toc-text">查询语言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#SQL%EF%BC%88DDL%E3%80%81DML%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">SQL（DDL、DML）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SQL%E7%89%B9%E7%82%B9"><span class="toc-number">5.0.1.</span> <span class="toc-text">SQL特点:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DDL%EF%BC%88-Data-Definition-Language%EF%BC%89"><span class="toc-number">5.1.</span> <span class="toc-text">DDL（(Data Definition Language）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%BC%8F"><span class="toc-number">5.1.1.</span> <span class="toc-text">模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A8"><span class="toc-number">5.1.2.</span> <span class="toc-text">表</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-number">5.1.2.1.</span> <span class="toc-text">数据类型</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95"><span class="toc-number">5.1.3.</span> <span class="toc-text">索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%AD%97%E5%85%B8"><span class="toc-number">5.1.4.</span> <span class="toc-text">数据字典</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DML%EF%BC%88Data-Manipulation-Language%EF%BC%89"><span class="toc-number">5.2.</span> <span class="toc-text">DML（Data Manipulation Language）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E6%89%BE"><span class="toc-number">5.2.1.</span> <span class="toc-text">查找</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%8F%E5%85%B8%E6%A1%88%E4%BE%8B"><span class="toc-number">5.2.1.1.</span> <span class="toc-text">经典案例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%9B%B4%E6%96%B0"><span class="toc-number">5.2.2.</span> <span class="toc-text">数据更新</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E6%8F%92%E5%85%A5%E5%85%83%E7%BB%84"><span class="toc-number">5.2.2.1.</span> <span class="toc-text">1.插入元组</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E4%BF%AE%E6%94%B9%E6%95%B0%E6%8D%AE"><span class="toc-number">5.2.2.2.</span> <span class="toc-text">2.修改数据</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE"><span class="toc-number">5.2.2.3.</span> <span class="toc-text">3.删除数据</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%86%E5%9B%BE"><span class="toc-number">5.2.3.</span> <span class="toc-text">视图</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%86%E5%9B%BE%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-number">5.2.3.1.</span> <span class="toc-text">视图的作用</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%88%E6%9D%83"><span class="toc-number">5.3.</span> <span class="toc-text">授权</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#grant%E8%AF%AD%E5%8F%A5"><span class="toc-number">5.3.1.</span> <span class="toc-text">grant语句</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#revoke%E8%AF%AD%E5%8F%A5"><span class="toc-number">5.3.2.</span> <span class="toc-text">revoke语句</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%92%E8%89%B2"><span class="toc-number">5.3.3.</span> <span class="toc-text">角色</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BE%8B%E9%A2%98"><span class="toc-number">6.</span> <span class="toc-text">例题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%B8%89%E4%B8%AA%E7%BB%84%E6%88%90%E9%83%A8%E5%88%86"><span class="toc-number">6.0.1.</span> <span class="toc-text">关系模型的三个组成部分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E8%BF%B0%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AF%AD%E8%A8%80%E7%9A%84%E7%89%B9%E7%82%B9%E5%92%8C%E5%88%86%E7%B1%BB"><span class="toc-number">6.0.2.</span> <span class="toc-text">简述关系数据库语言的特点和分类</span></a></li></ol></li></ol></li></ol></nav></aside></div><section class="p-ext"><div class="l-pager l-pager-dtl box"><a class="prev" href="/2022/10/15/databse-design/">&lt; 数据库笔记4-数据库设计</a><a class="next" href="/2022/10/13/data-model/">数据库笔记2-数据模型 &gt;</a></div></section><footer><p>Copyright © 2016 - 2024 <a href="/." rel="nofollow">未知のBlogger</a> | <strong><a rel="nofollow" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></strong><br><span id="busuanzi_container_site_uv"><i class="fa fa-user"></i><span id="busuanzi_value_site_uv"></span></span> <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_site_pv"></span></span> | Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a>Theme with<a rel="nofollow" target="_blank" href="https://github.com/litreily/snark-hexo"> snark.</a></p></footer></div></div></div><script type="text/javascript" src="/js/search.js"></script><script type="text/javascript" src="/js/top.js"></script><script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+    search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.1" async></script></body></html>

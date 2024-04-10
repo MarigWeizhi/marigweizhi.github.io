@@ -1,0 +1,228 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><meta name="theme-color" content="#2d4356"><meta name="baidu-site-verification"><title>数据库笔记5-数据库基本原理 | 未知のBlogger</title><link rel="stylesheet" type="text/css" href="/css/style.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.png"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script><meta name="generator" content="Hexo 7.1.1"><link rel="alternate" href="/atom.xml" title="未知のBlogger" type="application/atom+xml">
+</head><link rel="stylesheet" type="text/css" href="/plugins/highlight/atom-one-dark.min.css"><script type="text/javascript" src="/plugins/highlight/highlight.min.js"></script><script>hljs.initHighlightingOnLoad();
+</script><script type="text/javascript" src="/js/ready.js" async></script><link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css"><body class="night"><div class="mobile-head" id="mobile-head"><div class="navbar-icon"><span></span><span></span><span></span></div><div class="navbar-title"><a href="/">LITREILY</a></div><div class="navbar-search"><!--= show a circle here--></div></div><div class="h-wrapper" id="menu"><nav class="h-head box"><div class="m-hdimg"><a class="hdimg img" href="/"><img class="nofancybox" src="/img/profile.jpg" width="128" height="128"></a><h1 class="ttl"><a href="/">未知のBlogger</a></h1></div><p class="m-desc">命里有时终须有,<br>命里无时莫强求！</p><div class="m-nav"><ul><li><span class="dot">●</span><a href="/archives/">归档</a></li><li><span class="dot">●</span><a href="/categories/">分类</a></li><li><span class="dot">●</span><a href="/tags/">标签</a></li><li><span class="dot">●</span><a href="/about/">关于</a></li><li><span class="dot">●</span><a href="/atom.xml">RSS</a></li><li class="m-sch"><form class="form" id="j-formsch" method="get"><input class="txt" type="text" id="local-search-input" name="q" value="搜索" onfocus="if(this.value=='搜索'){this.value='';}" onblur="if(this.value==''){this.value='搜索';}"><input type="text" style="display:none;"></form></li></ul><div id="local-search-result"></div></div></nav></div><div id="back2Top"><a class="fa fa-arrow-up" title="Back to top" href="#"></a></div><div class="box" id="container"><div class="l-wrapper"><div class="l-content box"><div class="l-post l-post-art"><article class="p-art"><div class="p-header box"><h1 class="p-title">数据库笔记5-数据库基本原理</h1><div class="p-info"><span class="p-date"><i class="fa fa-calendar"></i><a href="/2022/10/16/database-principles/">2022-10-16</a></span><span class="p-category"><i class="fa fa-folder"></i><a href="/categories/database/">database</a></span><span class="p-view" id="busuanzi_container_page_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_page_pv"></span></span></div></div><div class="p-content"><h1 id="数据的存储方式"><a href="#数据的存储方式" class="headerlink" title="数据的存储方式"></a>数据的存储方式</h1><h3 id="聚簇-clustering"><a href="#聚簇-clustering" class="headerlink" title="聚簇(clustering)"></a>聚簇(clustering)</h3><blockquote>
+<p>为提高某个属性(组)的查询速度，将这些属性上具有相同值的元组存在连续的物理块中称为聚簇。该属性(组)称为<code>聚簇码</code>(cluster key)  </p>
+</blockquote>
+<h4 id="聚簇的优点"><a href="#聚簇的优点" class="headerlink" title="聚簇的优点"></a>聚簇的优点</h4><ul>
+<li>在数据库系统中，I&#x2F;O操作的时间开销很大，而聚簇大大降低了I&#x2F;O操作</li>
+<li>聚簇也适用于多个常用于连接的关系，即把多个连接关系的元组按连接属性值聚簇存放，相当于<code>预连接</code>。</li>
+<li>一个数据库可以有多个聚簇，一个关系只能加入一个聚簇。</li>
+</ul>
+<h4 id="聚簇的缺点"><a href="#聚簇的缺点" class="headerlink" title="聚簇的缺点"></a>聚簇的缺点</h4><ul>
+<li>聚簇建立维护开销很大，需要与优点权衡</li>
+<li>对已有关系建立聚簇，会移动数据的物理地址，即原索引全部失效，需要重新建立索引</li>
+<li>聚簇码值修改会导致数据物理地址移动</li>
+</ul>
+<h4 id="聚簇的选择要求"><a href="#聚簇的选择要求" class="headerlink" title="聚簇的选择要求"></a>聚簇的选择要求</h4><ul>
+<li>经常进行连接操作的关系</li>
+<li>关系中的一组属性经常出现在相等比较中</li>
+<li>关系的个或一组属性上的值重复率很高。即聚簇码值平均元组数不能太少。</li>
+<li>SQL语句经常出现<code>ORDER BY</code>、<code>GROUP BY</code>、<code>UNION</code>、<code>DISTINCT</code>等子句。</li>
+<li>不经常进行全表扫描</li>
+<li>连接操作多于更新操作</li>
+<li>一个表只能加入一个聚簇，如果有一个表符合多个，则选择最优的</li>
+</ul>
+<h1 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h1><p>索引法（B+树、Hash）</p>
+<h3 id="B-树索引法"><a href="#B-树索引法" class="headerlink" title="B+树索引法"></a>B+树索引法</h3><p>一般条件：</p>
+<ol>
+<li>一个(组)属性经常在查询条件中出现，考虑在该属性上建立(组合)索引</li>
+<li>一个属性经常作为最大值和最小值等聚集函数的参数，考虑建立索引</li>
+<li>一个(组)属性经常在连接操作的连接条件中出现，考虑建立索引</li>
+</ol>
+<p><em><strong>注意：</strong></em><br>若一个关系更新频率很高，则要花费大量时间更新索引，因此不适合建立太多索引</p>
+<h3 id="Hash索引法"><a href="#Hash索引法" class="headerlink" title="Hash索引法"></a>Hash索引法</h3><p>一般条件:</p>
+<ol>
+<li>一个关系的大小可预知，且不变。</li>
+<li>关系的大小动态改变，但数据库管理系统提供了动态hash存储方法。</li>
+</ol>
+<h1 id="查询的执行方式"><a href="#查询的执行方式" class="headerlink" title="查询的执行方式"></a>查询的执行方式</h1><p>数据库查询四个步骤：查询分析、查询检查、查询优化、查询执行</p>
+<ul>
+<li>查询分析<br>对查询语句进行扫描、词法、语法分析，没有错误则进行下一步。</li>
+<li>查询检查<br>对合法的查询语句进行语义检查，根据数据字典检查各对象是否存在和有效和权限检查，如果是视图操作，则需转换成对基本表的操作。</li>
+<li>查询优化<br>选择一个高效的查询策略，一般分为代数优化、物理优化。代数优化是修改代数表达式的操作和组合实现优化；物理优化是指存储路径和底层操作算法，物理优化可以基于规则、代价、语义。</li>
+<li>查询执行<br>根据优化器得到的查询策略，通过代码生成器生成查询计划并进行查询。</li>
+</ul>
+<h2 id="选择操作实现"><a href="#选择操作实现" class="headerlink" title="选择操作实现"></a>选择操作实现</h2><ul>
+<li>选择操作只涉及一张表，一般用简单全表扫描或索引扫描。</li>
+<li>若选择率低，索引扫描效率更高。</li>
+<li>若选择率高，全表扫描效率高，因为B+树索引的扫描操作，对于每个检索码，从根结点到叶子结点，每个结点都要执行一次I&#x2F;O操作。</li>
+</ul>
+<h3 id="1）简单全表扫描法"><a href="#1）简单全表扫描法" class="headerlink" title="1）简单全表扫描法"></a>1）简单全表扫描法</h3><p>设可用内存M</p>
+<ol>
+<li>按照物理次序读M的数据到内存</li>
+<li>检查内存每个元组t，满足则输出</li>
+<li>若表没读完，则重复1-2操作</li>
+</ol>
+<h3 id="2）索引扫描法"><a href="#2）索引扫描法" class="headerlink" title="2）索引扫描法"></a>2）索引扫描法</h3><ul>
+<li>若选择条件的数学有索引(B+树、Hash)，则可以通过索引先找到满足条件的元组指针，再通过指针在基本表中找到元组。</li>
+<li>若干选择条件包含多个带索引的属性，有以下两种方法：<ol>
+<li>各属性分别利用索引找到满足条件的指针组，最后将各组指针取交集。</li>
+<li>选某个属性利用索引找到满足条件的指针组，遍历这个指针组对应的元组，检查是否满足其他属性的条件，满足则输出。</li>
+</ol>
+</li>
+</ul>
+<h2 id="连接操作实现"><a href="#连接操作实现" class="headerlink" title="连接操作实现"></a>连接操作实现</h2><p>连接操作是查询处理最常用也最耗时的操作之一。常用等值连接算法思想：</p>
+<h3 id="1-嵌套循环算法"><a href="#1-嵌套循环算法" class="headerlink" title="1) 嵌套循环算法"></a>1) 嵌套循环算法</h3><ul>
+<li>最简单可行通用的算法，可以处理等值与非等值的连接</li>
+<li>以一张表为外循环，另一张表作为内循环，根据连接条件判断是否连接</li>
+<li>实际实现时是按照数据库读入内存，而不是按照元组I&#x2F;O</li>
+</ul>
+<h3 id="2-排序-合并算法"><a href="#2-排序-合并算法" class="headerlink" title="2) 排序-合并算法"></a>2) 排序-合并算法</h3><ul>
+<li>将参与连接的表根据连接条件进行排序</li>
+<li>取出一张表的第一个连接属性，并扫描找到另一张表连接属性相同值，然后开始连接。（因为排了序，后面都是连续可连接的）</li>
+<li>开始连接后，当遇到第一个不可连接的元组时，第一个对象连接结束。</li>
+<li>重复上述过程，直到连接结束。</li>
+</ul>
+<p>特点：  </p>
+<ul>
+<li>两个表都只遍历了一遍</li>
+<li>一般来说，对于大表，先排序再连接，效率也比嵌套循环好</li>
+</ul>
+<h3 id="3-索引连接算法"><a href="#3-索引连接算法" class="headerlink" title="3) 索引连接算法"></a>3) 索引连接算法</h3><p>设SC表上已有Sno索引</p>
+<ul>
+<li>对每一个Student元组，根据Student.Sno值，利用SC的Sno索引，快速找到SC.Sno</li>
+<li>将Student元组和SC元组连接起来</li>
+</ul>
+<h3 id="4-hash-join算法"><a href="#4-hash-join算法" class="headerlink" title="4) hash join算法"></a>4) hash join算法</h3><ul>
+<li>划分阶段：也称创建阶段，连接属性作为hash码，将较小的表散列到hash表中。</li>
+<li>试探阶段：也称连接阶段，将另一张表用同一个hash函数进行散列，并将来自大表的元组和hash表中来自小表的元组相匹配的元组连接起来。</li>
+<li>前提：较小的表可完全放入内存中，不满足前提则需要其他优化后的算法</li>
+</ul>
+<h1 id="查询优化"><a href="#查询优化" class="headerlink" title="查询优化"></a>查询优化</h1><h2 id="查询优化概述"><a href="#查询优化概述" class="headerlink" title="查询优化概述"></a>查询优化概述</h2><p>集中式数据库中，查询执行开销主要包括：磁盘存取块数(I&#x2F;O代价)、处理机时间(CPU代价)、查询的内存开销。<br>在分布式数据库中还要加上通信代价。<br>即<code>总代价=I/O代价+CPU代价+内存代价+通信代价</code><br>其中，I&#x2F;O代价比内存操作相比要高几个数量级，因此计算代价时一般用查询处理读写的块数作为衡量单位。</p>
+<h2 id="查询优化的优点"><a href="#查询优化的优点" class="headerlink" title="查询优化的优点"></a>查询优化的优点</h2><ul>
+<li>用户无需考虑最好的表达查询以获得较高的查询</li>
+<li>系统优化可以比用户程序的优化做的更好，因为：<ol>
+<li>优化器可以从数据字典中获取许多统计信息。</li>
+<li>若物理统计信息变了，优化器可以重新优化，即无需重写程序。</li>
+<li>优化器可以考虑到数百种查询计划，而程序员一般只能考虑到有限的几种。</li>
+<li>优化器使用了很多复杂的优化技术，而这些技术不是所有人都能掌握的，即使用了优化器，相当于普通程序员也能使用到这些技术。</li>
+</ol>
+</li>
+</ul>
+<h2 id="举个栗子"><a href="#举个栗子" class="headerlink" title="举个栗子"></a>举个栗子</h2><pre><code class="sql">select student.sname from student,sc where student.sno = sc.sno and sc.cno=&#39;2&#39;
+</code></pre>
+<p>以上SQL语句可以等价于以下三种关系代数表达式：</p>
+<ul>
+<li><code>Q1=πSname(σStudent.Sno=SC.Cno=&#39;2&#39;(Student × SC))</code></li>
+<li><code>Q2=πSname(σSC.Cno=&#39;2&#39;(Student ⋈ SC))</code></li>
+<li><code>Q3=πSname(Student ⋈ (σSC.Cno=&#39;2&#39;(SC)))</code></li>
+</ul>
+<p>假设学生记录1000个，选课记录10000个，2号课选修记录50个</p>
+<h3 id="情况1"><a href="#情况1" class="headerlink" title="情况1"></a>情况1</h3><h4 id="1-连接："><a href="#1-连接：" class="headerlink" title="1) 连接："></a>1) 连接：</h4><ul>
+<li>先将Student表尽可能存在内存中，留出一块放SC表的元组，然后将SC中的元组与Student的元组连接，连接后的元组写入中间文件中</li>
+<li>再从SC中读入一块和内存中的Student元组连接，直到SC表处理完。</li>
+<li>这时再一次读入剩下的Student元组，也留一块放SC表元组，重复操作，直到Student处理完。</li>
+</ul>
+<p>简单理解：Studen只读一遍，分多批读，每一批Student要遍历所有SC。</p>
+<p>设一个块能装10个Student元组或100个SC元组，在内存中放五块Student元组和1块SC元组，则读取总数为：<br><code>1000/10 + 1000/(10*5) * 10000/100 = 100+20*100=2100块</code><br>其中读Student100块，读SC表20遍，每遍100块，则总计要读2100块。</p>
+<p>连接后的元组数：1000*10000&#x3D;1e7，设一个块存10个元组，则写出1e6个块。</p>
+<h4 id="2-选择："><a href="#2-选择：" class="headerlink" title="2) 选择："></a>2) 选择：</h4><p>假设内存操作时间忽略不计，读取第一步的中间文件1e6块，满足条件的50个元组均可放在内存。</p>
+<h4 id="3-投影："><a href="#3-投影：" class="headerlink" title="3) 投影："></a>3) 投影：</h4><p>将第二部的结果在Sname上投影，得到结果。</p>
+<p>总读写数据块：<code>2100 + 1e6 + 1e6</code></p>
+<h3 id="情况2"><a href="#情况2" class="headerlink" title="情况2"></a>情况2</h3><ul>
+<li>自然连接读取策略不变，与情况1一致为2100块，但连接结果只有1e4个元组，写出数据库1e3  </li>
+<li>读取数据块1e3做选择操作</li>
+<li>投影输出，最终读写数据块 <code>2100 + 1e3 + 1e3</code><br> 代价为情况1的 1&#x2F;488</li>
+</ul>
+<h3 id="情况3"><a href="#情况3" class="headerlink" title="情况3"></a>情况3</h3><ul>
+<li>先遍历一次SC，读取100块，将满足条件的50个元组筛选出来，不用使用中间文件</li>
+<li>读取Student表一遍，100块，并与SC连接。</li>
+<li>将结果投影输出</li>
+<li>总代价为 <code>100+100</code><br>第三种情况是第一种的万分之一，是第二种的20分之一</li>
+</ul>
+<h3 id="情况4"><a href="#情况4" class="headerlink" title="情况4"></a>情况4</h3><p>若SC在Cno上有索引，StudentSno上有索引，SC找到符合条件的50个元组，只需通过读取索引块（大约3-4块），再通过Student上的sno索引，也能更快速找到50个满足条件的student元组，并连接输出结果。</p>
+<h2 id="代数优化"><a href="#代数优化" class="headerlink" title="代数优化"></a>代数优化</h2><h3 id="关系代数表达式等价变化规则"><a href="#关系代数表达式等价变化规则" class="headerlink" title="关系代数表达式等价变化规则"></a>关系代数表达式等价变化规则</h3><ol>
+<li>连接、笛卡尔积的交换律</li>
+<li>连接、笛卡尔积的结合律<br>(E1 × E2) × E3 &#x3D; E1 × (E2 × E3)<br>(E1 ⋈ E2) ⋈ E3 &#x3D; E1 ⋈ (E2 ⋈ E3)</li>
+<li>投影的串接定律<br>在投影的基础上再一次投影等价于一次性全部投影</li>
+<li>选择的串接定律</li>
+<li>选择与投影的交换律</li>
+<li>选择与笛卡尔积的交换律</li>
+<li>选择与并的分配律</li>
+<li>选择与差的分配律</li>
+<li>选择与自然连接的分配律</li>
+<li>投影与笛卡尔积的分配律</li>
+<li>投影与并的分配律</li>
+</ol>
+<h3 id="查询树的启发式优化："><a href="#查询树的启发式优化：" class="headerlink" title="查询树的启发式优化："></a>查询树的启发式优化：</h3><ol>
+<li>选择运算优先做(对比情况2和情况3)</li>
+<li>投影运算和选择运算同时进行，对同一个表的操作避免重复扫描。</li>
+<li>把投影前或后的双目运算结合起来，没有必要为了去掉某些字段而扫描一遍表。(例如情况3，没有必要先将Student的Sno和Sname投影出来后再与SC连接)</li>
+<li>把某些选择同它之前要执行的笛卡尔积结合成一个连接运算(对比情况1和情况2)</li>
+<li>找出公共表达式，若读取公共查询结果代价小于重新计算代价可以，避免重复计算</li>
+</ol>
+<p>查询树优化示例：</p>
+<pre><code class="sql">select Student.Sname from Student,SC where Student.Sno = SC.Sno and SC.Cno = &#39;2&#39;;
+</code></pre>
+<p><em><strong>查询树图</strong></em>   </p>
+<p><img src="/../images/%E6%9F%A5%E8%AF%A2%E6%A0%91%E5%9B%BE.png" alt="查询树图"></p>
+<p><em><strong>关系代数语法树</strong></em>   </p>
+<p><img src="/../images/%E5%85%B3%E7%B3%BB%E4%BB%A3%E6%95%B0%E8%AF%AD%E6%B3%95%E6%A0%91%E5%9B%BE.jpg" alt="关系代数语法树图"></p>
+<p><em><strong>优化后的查询树</strong></em>   </p>
+<p><img src="/../images/%E4%BC%98%E5%8C%96%E5%90%8E%E7%9A%84%E6%9F%A5%E8%AF%A2%E6%A0%91.jpg" alt="优化后的查询树"></p>
+<h2 id="物理优化"><a href="#物理优化" class="headerlink" title="物理优化"></a>物理优化</h2><p>物理优化方法一般有：  </p>
+<ul>
+<li><ol>
+<li>基于规则的启发式优化</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>基于代价估算的优化</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>两者结合的算法</li>
+</ol>
+</li>
+</ul>
+<h3 id="基于启发式规则的存储路径选择优化"><a href="#基于启发式规则的存储路径选择优化" class="headerlink" title="基于启发式规则的存储路径选择优化"></a>基于启发式规则的存储路径选择优化</h3><h4 id="选择操作的启发式规则"><a href="#选择操作的启发式规则" class="headerlink" title="选择操作的启发式规则"></a>选择操作的启发式规则</h4><ul>
+<li>对于小表，使用全表顺序扫描，即使选择列上有索引</li>
+<li>对于大表，启发式规则：</li>
+</ul>
+<ol>
+<li>选择条件为<code>主码=值</code>，其选择结果唯一，可选择主码索引。</li>
+<li>选择条件为<code>非主属性=值</code>，选择列上有索引，估算目标元组比例小于10%，可以使用索引扫描，否则全表扫描。 </li>
+<li>选择条件为非等值查询，选择列上有索引，估算目标元组比例小于10%，可以使用索引扫描，否则全表扫描。</li>
+<li>对于多属性<code>AND</code>选择条件，若多属性上有组合索引优先使用组合索引，如果只有部分属性有索引，则考虑：<ol>
+<li>用不同索引取出相应的指针组，并取交集(所有属性都有各自的索引)</li>
+<li>用一个索引取出一个指针组，然后遍历其他属性(遍历时有索引用索引)</li>
+</ol>
+</li>
+<li>对于<code>OR</code>选择条件，一般使用全表顺序扫描。</li>
+</ol>
+<h4 id="连接操作的启发式规则"><a href="#连接操作的启发式规则" class="headerlink" title="连接操作的启发式规则"></a>连接操作的启发式规则</h4><ol>
+<li>如果2个表都已经按照连接属性排序，则选用<code>排序-合并算法</code></li>
+<li>如果一个表在连接属性上有索引，则选择<code>索引连接算法</code></li>
+<li>1-2方法不使用，可以考虑选较小的表选用<code>hash join算法</code></li>
+<li>如果1-3不适用，则考虑<code>嵌套循环算法</code>，并选择占用块较小的表作为外循环。</li>
+</ol>
+<h3 id="基于代价估算的优化"><a href="#基于代价估算的优化" class="headerlink" title="基于代价估算的优化"></a>基于代价估算的优化</h3><ul>
+<li>基于启发式的算法是定性的，比较粗糙，实现简单代价较小，适合解释执行的系统。</li>
+<li>若在编译执行的系统，由于可以一次编译，多次执行，因此可以考虑加入一些精细复杂的基于代价的优化。</li>
+</ul>
+<p>可考虑的统计信息：  </p>
+<ol>
+<li>对于基本表，元组总数<code>N</code>、元组长度<code>l</code>、占用块数<code>B</code>、占用的溢出块数<code>BO</code></li>
+<li>对于基本表的列，该列不同值的个数<code>m</code>、该列最大值、最小值、是否有索引、何种索引(B+树、Hash、聚簇)，根据这些数据可以算出谓词条件的选择率<code>f</code>，如果值分布均匀则<code>f=1/m</code>，否则需要算出每个值的选择率。</li>
+<li>对于索引，如B+树索引，该索引的层数<code>L</code>、不同索引值的个数、索引的选择基数<code>S</code>(有S个元组具有某个索引值)、索引的叶节点数<code>Y</code></li>
+</ol>
+<h4 id="代价估算示例"><a href="#代价估算示例" class="headerlink" title="代价估算示例"></a>代价估算示例</h4><ol>
+<li><p>全表扫描算法估算<br>基本表大小<code>B块</code>，全表扫描代价<code>B</code>,等值扫描，平均代价为<code>B/2</code></p>
+</li>
+<li><p>索引连接算法估算<br>等值条件，代价<code>L+1</code>，L为索引层数，1为目标所在那一块</p>
+</li>
+<li><p>嵌套循环算法估算<br>代价为<code>Br+BrBs(K-1)</code><br>如果要把结果写回磁盘则为<code>Br+BrBs(K-1)+(Frs*Nr*Ns)/Mrs</code><br>Br、Bs分别为R表和S表占用的块数B<br>K为内存缓存区块数(其中K-1块给外表)<br>Frs为连接选择率<br>Mrs是存放连接结果的块因子，表示每块中可以存放结果元组数</p>
+</li>
+</ol>
+<p>具体算法参考前文的<code>栗子</code></p>
+<ol start="4">
+<li>排序-合并算法估算<br>如果已经排好序代价为<code>Br+Bs+(Frs*Nr*Ns)/Mrs</code><br>如果未排序则需要加上<code>2*B+(2*B*log2B)</code></li>
+</ol>
+<h3 id="基于语义的物理优化"><a href="#基于语义的物理优化" class="headerlink" title="基于语义的物理优化"></a>基于语义的物理优化</h3><p>上述主要描述了基于规则和基于代价的物理优化方法，基于语义的方式仅举个栗子：<br><code>select * from Student where Student.age &gt;= 200</code><br>数据库系统发现，查询条件中年龄最大值小于200，因此无需读取基本表，直接返回空值。</p>
+</div><div class="p-copyright"><blockquote><div class="p-copyright-author"><span class="p-copyright-key">本文作者：</span><span class="p-copytight-value"><a href="mailto:litreily@163.com">Marig_Weizhi</a></span></div><div class="p-copyright-link"><span class="p-copyright-key">本文链接：</span><span class="p-copytight-value"><a href="/2022/10/16/database-principles/">http://marigweizhi.github.io/2022/10/16/database-principles/</a></span></div><div class="p-copyright-note"><span class="p-copyright-key">版权声明：</span><span class="p-copytight-value">本博客所有文章除特殊声明外，均采用<a rel="nofollow" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/"> CC BY-NC 4.0 </a>许可协议。转载请注明出处 <a href="http://marigweizhi.github.io">Marig_Weizhi的博客</a>！</span></div></blockquote></div></article><div class="p-info box"><span class="p-tags"><i class="fa fa-tag"></i><a href="/tags/database/">database</a></span></div><aside id="toc"><div class="toc-title">目录</div><nav><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%9A%84%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">数据的存储方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%81%9A%E7%B0%87-clustering"><span class="toc-number">1.0.1.</span> <span class="toc-text">聚簇(clustering)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%81%9A%E7%B0%87%E7%9A%84%E4%BC%98%E7%82%B9"><span class="toc-number">1.0.1.1.</span> <span class="toc-text">聚簇的优点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%81%9A%E7%B0%87%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="toc-number">1.0.1.2.</span> <span class="toc-text">聚簇的缺点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%81%9A%E7%B0%87%E7%9A%84%E9%80%89%E6%8B%A9%E8%A6%81%E6%B1%82"><span class="toc-number">1.0.1.3.</span> <span class="toc-text">聚簇的选择要求</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95"><span class="toc-number">2.</span> <span class="toc-text">索引</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#B-%E6%A0%91%E7%B4%A2%E5%BC%95%E6%B3%95"><span class="toc-number">2.0.1.</span> <span class="toc-text">B+树索引法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hash%E7%B4%A2%E5%BC%95%E6%B3%95"><span class="toc-number">2.0.2.</span> <span class="toc-text">Hash索引法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E7%9A%84%E6%89%A7%E8%A1%8C%E6%96%B9%E5%BC%8F"><span class="toc-number">3.</span> <span class="toc-text">查询的执行方式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E6%93%8D%E4%BD%9C%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.1.</span> <span class="toc-text">选择操作实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%EF%BC%89%E7%AE%80%E5%8D%95%E5%85%A8%E8%A1%A8%E6%89%AB%E6%8F%8F%E6%B3%95"><span class="toc-number">3.1.1.</span> <span class="toc-text">1）简单全表扫描法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2%EF%BC%89%E7%B4%A2%E5%BC%95%E6%89%AB%E6%8F%8F%E6%B3%95"><span class="toc-number">3.1.2.</span> <span class="toc-text">2）索引扫描法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5%E6%93%8D%E4%BD%9C%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.2.</span> <span class="toc-text">连接操作实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%B5%8C%E5%A5%97%E5%BE%AA%E7%8E%AF%E7%AE%97%E6%B3%95"><span class="toc-number">3.2.1.</span> <span class="toc-text">1) 嵌套循环算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%8E%92%E5%BA%8F-%E5%90%88%E5%B9%B6%E7%AE%97%E6%B3%95"><span class="toc-number">3.2.2.</span> <span class="toc-text">2) 排序-合并算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%B4%A2%E5%BC%95%E8%BF%9E%E6%8E%A5%E7%AE%97%E6%B3%95"><span class="toc-number">3.2.3.</span> <span class="toc-text">3) 索引连接算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-hash-join%E7%AE%97%E6%B3%95"><span class="toc-number">3.2.4.</span> <span class="toc-text">4) hash join算法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96"><span class="toc-number">4.</span> <span class="toc-text">查询优化</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96%E6%A6%82%E8%BF%B0"><span class="toc-number">4.1.</span> <span class="toc-text">查询优化概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96%E7%9A%84%E4%BC%98%E7%82%B9"><span class="toc-number">4.2.</span> <span class="toc-text">查询优化的优点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BE%E4%B8%AA%E6%A0%97%E5%AD%90"><span class="toc-number">4.3.</span> <span class="toc-text">举个栗子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%85%E5%86%B51"><span class="toc-number">4.3.1.</span> <span class="toc-text">情况1</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E8%BF%9E%E6%8E%A5%EF%BC%9A"><span class="toc-number">4.3.1.1.</span> <span class="toc-text">1) 连接：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E9%80%89%E6%8B%A9%EF%BC%9A"><span class="toc-number">4.3.1.2.</span> <span class="toc-text">2) 选择：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E6%8A%95%E5%BD%B1%EF%BC%9A"><span class="toc-number">4.3.1.3.</span> <span class="toc-text">3) 投影：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%85%E5%86%B52"><span class="toc-number">4.3.2.</span> <span class="toc-text">情况2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%85%E5%86%B53"><span class="toc-number">4.3.3.</span> <span class="toc-text">情况3</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%85%E5%86%B54"><span class="toc-number">4.3.4.</span> <span class="toc-text">情况4</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E6%95%B0%E4%BC%98%E5%8C%96"><span class="toc-number">4.4.</span> <span class="toc-text">代数优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E4%BB%A3%E6%95%B0%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%AD%89%E4%BB%B7%E5%8F%98%E5%8C%96%E8%A7%84%E5%88%99"><span class="toc-number">4.4.1.</span> <span class="toc-text">关系代数表达式等价变化规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%A0%91%E7%9A%84%E5%90%AF%E5%8F%91%E5%BC%8F%E4%BC%98%E5%8C%96%EF%BC%9A"><span class="toc-number">4.4.2.</span> <span class="toc-text">查询树的启发式优化：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%A9%E7%90%86%E4%BC%98%E5%8C%96"><span class="toc-number">4.5.</span> <span class="toc-text">物理优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E5%90%AF%E5%8F%91%E5%BC%8F%E8%A7%84%E5%88%99%E7%9A%84%E5%AD%98%E5%82%A8%E8%B7%AF%E5%BE%84%E9%80%89%E6%8B%A9%E4%BC%98%E5%8C%96"><span class="toc-number">4.5.1.</span> <span class="toc-text">基于启发式规则的存储路径选择优化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E6%93%8D%E4%BD%9C%E7%9A%84%E5%90%AF%E5%8F%91%E5%BC%8F%E8%A7%84%E5%88%99"><span class="toc-number">4.5.1.1.</span> <span class="toc-text">选择操作的启发式规则</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5%E6%93%8D%E4%BD%9C%E7%9A%84%E5%90%AF%E5%8F%91%E5%BC%8F%E8%A7%84%E5%88%99"><span class="toc-number">4.5.1.2.</span> <span class="toc-text">连接操作的启发式规则</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E4%BB%A3%E4%BB%B7%E4%BC%B0%E7%AE%97%E7%9A%84%E4%BC%98%E5%8C%96"><span class="toc-number">4.5.2.</span> <span class="toc-text">基于代价估算的优化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E4%BB%B7%E4%BC%B0%E7%AE%97%E7%A4%BA%E4%BE%8B"><span class="toc-number">4.5.2.1.</span> <span class="toc-text">代价估算示例</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E8%AF%AD%E4%B9%89%E7%9A%84%E7%89%A9%E7%90%86%E4%BC%98%E5%8C%96"><span class="toc-number">4.5.3.</span> <span class="toc-text">基于语义的物理优化</span></a></li></ol></li></ol></li></ol></nav></aside></div><section class="p-ext"><div class="l-pager l-pager-dtl box"><a class="prev" href="/2022/10/26/databse-transaction/">&lt; 数据库笔记6-事务处理</a><a class="next" href="/2022/10/15/databse-design/">数据库笔记4-数据库设计 &gt;</a></div></section><footer><p>Copyright © 2016 - 2024 <a href="/." rel="nofollow">未知のBlogger</a> | <strong><a rel="nofollow" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></strong><br><span id="busuanzi_container_site_uv"><i class="fa fa-user"></i><span id="busuanzi_value_site_uv"></span></span> <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_site_pv"></span></span> | Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a>Theme with<a rel="nofollow" target="_blank" href="https://github.com/litreily/snark-hexo"> snark.</a></p></footer></div></div></div><script type="text/javascript" src="/js/search.js"></script><script type="text/javascript" src="/js/top.js"></script><script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+    search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.1" async></script></body></html>

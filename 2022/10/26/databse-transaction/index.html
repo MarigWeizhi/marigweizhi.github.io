@@ -1,0 +1,315 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><meta name="theme-color" content="#2d4356"><meta name="baidu-site-verification"><title>数据库笔记6-事务处理 | 未知のBlogger</title><link rel="stylesheet" type="text/css" href="/css/style.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.png"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script><meta name="generator" content="Hexo 7.1.1"><link rel="alternate" href="/atom.xml" title="未知のBlogger" type="application/atom+xml">
+</head><link rel="stylesheet" type="text/css" href="/plugins/highlight/atom-one-dark.min.css"><script type="text/javascript" src="/plugins/highlight/highlight.min.js"></script><script>hljs.initHighlightingOnLoad();
+</script><script type="text/javascript" src="/js/ready.js" async></script><link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css"><body class="night"><div class="mobile-head" id="mobile-head"><div class="navbar-icon"><span></span><span></span><span></span></div><div class="navbar-title"><a href="/">LITREILY</a></div><div class="navbar-search"><!--= show a circle here--></div></div><div class="h-wrapper" id="menu"><nav class="h-head box"><div class="m-hdimg"><a class="hdimg img" href="/"><img class="nofancybox" src="/img/profile.jpg" width="128" height="128"></a><h1 class="ttl"><a href="/">未知のBlogger</a></h1></div><p class="m-desc">命里有时终须有,<br>命里无时莫强求！</p><div class="m-nav"><ul><li><span class="dot">●</span><a href="/archives/">归档</a></li><li><span class="dot">●</span><a href="/categories/">分类</a></li><li><span class="dot">●</span><a href="/tags/">标签</a></li><li><span class="dot">●</span><a href="/about/">关于</a></li><li><span class="dot">●</span><a href="/atom.xml">RSS</a></li><li class="m-sch"><form class="form" id="j-formsch" method="get"><input class="txt" type="text" id="local-search-input" name="q" value="搜索" onfocus="if(this.value=='搜索'){this.value='';}" onblur="if(this.value==''){this.value='搜索';}"><input type="text" style="display:none;"></form></li></ul><div id="local-search-result"></div></div></nav></div><div id="back2Top"><a class="fa fa-arrow-up" title="Back to top" href="#"></a></div><div class="box" id="container"><div class="l-wrapper"><div class="l-content box"><div class="l-post l-post-art"><article class="p-art"><div class="p-header box"><h1 class="p-title">数据库笔记6-事务处理</h1><div class="p-info"><span class="p-date"><i class="fa fa-calendar"></i><a href="/2022/10/26/databse-transaction/">2022-10-26</a></span><span class="p-category"><i class="fa fa-folder"></i><a href="/categories/database/">database</a></span><span class="p-view" id="busuanzi_container_page_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_page_pv"></span></span></div></div><div class="p-content"><h1 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h1><blockquote>
+<p>事务是数据库数据恢复和并发控制的基本单位。</p>
+</blockquote>
+<h2 id="事务的ACID属性"><a href="#事务的ACID属性" class="headerlink" title="事务的ACID属性"></a>事务的ACID属性</h2><h2 id="原子性-Atomicity"><a href="#原子性-Atomicity" class="headerlink" title="原子性(Atomicity)"></a>原子性(Atomicity)</h2><blockquote>
+<p>保证事务是一个独立的逻辑单位，事务中的诸多操作要么全做，要么全不做。事务对于数据库来说，要么彻底完成数据的增删改，要么对数据库未做任何操作。</p>
+</blockquote>
+<h2 id="一致性-Consistency"><a href="#一致性-Consistency" class="headerlink" title="一致性(Consistency)"></a>一致性(Consistency)</h2><blockquote>
+<p>事务的执行结果必须是使数据库从一个一致性状态到另一个一致性状态。</p>
+</blockquote>
+<h2 id="隔离性-Isolation"><a href="#隔离性-Isolation" class="headerlink" title="隔离性(Isolation)"></a>隔离性(Isolation)</h2><blockquote>
+<p>一个事务的执行不会被另一个事务干扰。DBMS可以通过加锁在并发执行的多事务间提供不同级别的分离。</p>
+</blockquote>
+<h2 id="持续性-Durability"><a href="#持续性-Durability" class="headerlink" title="持续性(Durability)"></a>持续性(Durability)</h2><blockquote>
+<p>一个事务一旦提交，它对数据库中的数据改变是永久性的。</p>
+</blockquote>
+<p>事务被破坏的两种情况：</p>
+<ul>
+<li>多个事务并行运行，并且不同事务的操作交叉执行</li>
+<li>事务运行过程被强制停止</li>
+</ul>
+<h2 id="故障类型"><a href="#故障类型" class="headerlink" title="故障类型"></a>故障类型</h2><ul>
+<li>事务内部的错误，如数据库数据部不满足业务逻辑导致的错误(只剩100块，扣200块)，这类错误无法执行<code>commit</code>操作，因此数据库操作只执行了一部分，需要通过<code>UNDO</code>操作恢复。</li>
+<li>系统故障，如CPU、操作系统、DBMS故障、断电等故障导致系统停止运转。此时系统正在执行的事务被影响，对于已经<code>commit</code>的事务，但仍在数据库缓冲区中的内容也会丢失。系统需要重新启动，对故障发生前<code>commit</code>过的事务执行<code>REDO</code>操作。</li>
+<li>介质故障，系统故障为软故障，而介质故障为硬故障，即磁盘、磁头、瞬时强磁场干扰等，几率小破坏性更大。</li>
+<li>计算机病毒，通过非法程序破坏数据库，或恶意篡改数据库数据。</li>
+</ul>
+<h1 id="事务在程序中的使用方法"><a href="#事务在程序中的使用方法" class="headerlink" title="事务在程序中的使用方法"></a>事务在程序中的使用方法</h1><h2 id="登记日志文件"><a href="#登记日志文件" class="headerlink" title="登记日志文件"></a>登记日志文件</h2><blockquote>
+<p>日志文件是用来记录事务对数据库的更新操作的文件（增删改）  </p>
+</blockquote>
+<p><em><strong>日志内容：</strong></em>  </p>
+<ul>
+<li>事务开始标记</li>
+<li>事务所有更新操作(事务标识、操作类型、操作对象、更新前值，更新后值)</li>
+<li>事务结束标记</li>
+</ul>
+<p><em><strong>日志要求:</strong></em>  </p>
+<ul>
+<li>登记时间严格按并发事务执行时间的顺序</li>
+<li>必须先写日志文件后写数据库<br>如果日志文写入了，数据未写入，在恢复时只会多做一个无效的UNDO操作。<br>如果先写数据，若数据写入，日志未写入，数据库则无法根据日志恢复。</li>
+</ul>
+<h2 id="恢复"><a href="#恢复" class="headerlink" title="恢复"></a>恢复</h2><h3 id="数据转储"><a href="#数据转储" class="headerlink" title="数据转储"></a>数据转储</h3><blockquote>
+<p>数据库管理员可定期将整个数据库复制到磁盘或其他存储介质中。</p>
+</blockquote>
+<ul>
+<li>当数据库需要恢复时，可拿<code>后备副本</code>恢复到数据库备份时的状态。</li>
+<li>数据转储费时费力，可以考虑海量动态转储、海量静态转储、增量动态转储、增量静态转储等多种方式。</li>
+<li>动态转储是数据库转储前的内容+转储期间的日志</li>
+</ul>
+<h3 id="事务故障的恢复"><a href="#事务故障的恢复" class="headerlink" title="事务故障的恢复"></a>事务故障的恢复</h3><ol>
+<li>反向扫描日志文件，查找该事务的更新操作</li>
+<li>对日志记录进行逆操作，插入变删除、删除变插入，修改为前值</li>
+<li>直到事务的开始标记</li>
+</ol>
+<h3 id="系统故障的恢复"><a href="#系统故障的恢复" class="headerlink" title="系统故障的恢复"></a>系统故障的恢复</h3><ol>
+<li>正向从头扫描日志文件到故障发生处，所有有<code>commit</code>记录的事务添加到<code>REDO-LIST</code>，没有<code>commit</code>记录的添加到<code>UNDO-LIST</code></li>
+<li>对撤销队列中的事务执行<code>UNDO</code>操作</li>
+<li>对重做队列中的事务执行<code>REDO</code>操作</li>
+</ol>
+<h3 id="介质故障的恢复"><a href="#介质故障的恢复" class="headerlink" title="介质故障的恢复"></a>介质故障的恢复</h3><ol>
+<li>装入最新一次的数据库后备副本。（如果是动态转储的副本需要附加转储过程的日志文件结合系统故障恢复步骤恢复）</li>
+<li>装入相应日志文件副本，从备份点到故障发生点所有已经提交的事务执行<code>REDO</code>操作(因为是新的磁盘，无需UNDO)</li>
+</ol>
+<h3 id="检查点"><a href="#检查点" class="headerlink" title="检查点"></a>检查点</h3><ul>
+<li>从系统故障恢复步骤来看，从头扫描日志文件，是费时费力的，而且若数据库在故障发生前，事务commit后结果已经写入数据库了，则该事务无需执行REDO操作。  </li>
+<li>因此系统可以准备一个<code>重新开始文件</code>，里面可以专门定时记录<code>检查点</code>并利用检查点，在数据库恢复时快速找到真正需要重做的事务。</li>
+</ul>
+<h4 id="检查点内容"><a href="#检查点内容" class="headerlink" title="检查点内容"></a>检查点内容</h4><ul>
+<li>某一刻正在运行的所有事务清单</li>
+<li>这些事务在日志文件中，最近一个日志记录地址</li>
+</ul>
+<h3 id="带检查点的恢复"><a href="#带检查点的恢复" class="headerlink" title="带检查点的恢复"></a>带检查点的恢复</h3><ol>
+<li>根据重新开始文件，找到最近一个检查点，并索引到相应日志位置</li>
+<li>将检查点这一刻正在运行的所有事务<code>ACTIVE-LIST</code>暂时加入到<code>UNDO-LIST</code></li>
+<li>从检查点开始到故障点，扫描日志文件，若遇到事务开始标记，将其加入到<code>UNDO-LIST</code>，若遇到事务提交标记(此时该事务一定在UNDO-LIST中)，则从<code>UNDO-LIST</code>中移除，转移到<code>REDO-LIST</code>中。</li>
+<li>对<code>UNDO-LIST</code>中的事务做<code>UNDO</code>操作，对<code>REDO-LIST</code>中的事务做<code>REDO</code>操作。</li>
+</ol>
+<h2 id="并发控制"><a href="#并发控制" class="headerlink" title="并发控制"></a>并发控制</h2><blockquote>
+<p>并发控制可以更好的利用CPU、I&#x2F;O、通信资源。数据库系统通过事务的并发操作，实现数据库共享资源的特点。</p>
+</blockquote>
+<ul>
+<li>数据库系统可以通过不同的并发控制策略以解决这些问题（封锁、时间戳、乐观控制法、多版本并发控制(MVCC)）</li>
+<li>并发操作，很容易破坏事务的隔离性和一致性，并产生以下经典问题。</li>
+</ul>
+<h3 id="丢失修改"><a href="#丢失修改" class="headerlink" title="丢失修改"></a>丢失修改</h3><blockquote>
+<p>T1 T2读入同一个数据并修改，T1先保存修改，T2后保存修改，并将T1的修改结果覆盖掉了，导致T1丢失修改。</p>
+</blockquote>
+<h3 id="不可重复读"><a href="#不可重复读" class="headerlink" title="不可重复读"></a>不可重复读</h3><blockquote>
+<p>T1 T2读取同一个数据，T2进行修改并保存修改，T1再次读取数据，结果与第一次不一致。</p>
+</blockquote>
+<h3 id="读”脏”数据"><a href="#读”脏”数据" class="headerlink" title="读”脏”数据"></a>读”脏”数据</h3><blockquote>
+<p>T1修改一个数据并写入磁盘，T2在T1写入后读取同一数据，T2读取后T1事务发生异常导致T1回滚，使得T2读到的数据为脏数据。</p>
+</blockquote>
+<h2 id="封锁"><a href="#封锁" class="headerlink" title="封锁"></a>封锁</h2><h4 id="排它锁（写锁、X锁）"><a href="#排它锁（写锁、X锁）" class="headerlink" title="排它锁（写锁、X锁）"></a>排它锁（写锁、X锁）</h4><p>事务T1给对象O加上排他锁后，其他事务不能对O加任何的锁，直到T1释放锁，以实现保护数据不被其他事务影响。（但若T2事务的策略不打算给O加锁的话，尽管T1加了X锁，T2仍可以读O）</p>
+<h4 id="共享锁（读锁、S锁）"><a href="#共享锁（读锁、S锁）" class="headerlink" title="共享锁（读锁、S锁）"></a>共享锁（读锁、S锁）</h4><p>事务T1给对象O加了共享锁后，其他事务不能给该事务加排它锁，只能继续加共享锁。</p>
+<blockquote>
+<p>数据库通过使用封锁功能中的X锁和S锁可以实现并发控制。而不同的加锁策略可以实现不同级别的封锁协议，以满足不同的功能。  </p>
+</blockquote>
+<h3 id="一级封锁协议"><a href="#一级封锁协议" class="headerlink" title="一级封锁协议"></a>一级封锁协议</h3><blockquote>
+<p>事务如果要执行修改操作，则需要在修改前，给修改对象加上X锁，直到事务结束。  </p>
+</blockquote>
+<p>解决了丢失修改的问题<br>未解决不可重复和读”脏”数据的问题</p>
+<h3 id="二级封锁协议"><a href="#二级封锁协议" class="headerlink" title="二级封锁协议"></a>二级封锁协议</h3><blockquote>
+<p>在一级封锁协议的基础上，如果事务要读取数据则需先给目标加S锁，读取结束后释放锁。</p>
+</blockquote>
+<p>解决了丢失修改和读”脏”数据的问题<br>未解决不可重复读的问题</p>
+<h3 id="三级封锁协议"><a href="#三级封锁协议" class="headerlink" title="三级封锁协议"></a>三级封锁协议</h3><blockquote>
+<p>在一级封锁协议的基础上，如果事务要读取数据则需先给目标加S锁，事务结束后释放锁。</p>
+</blockquote>
+<p>解决了丢失修改、不可重复读和读”脏”数据的问题  </p>
+<h2 id="死锁活锁"><a href="#死锁活锁" class="headerlink" title="死锁活锁"></a>死锁活锁</h2><p><strong>活锁</strong>：是某一个事务在申请锁资源时，由于其他事务一直插队，导致这个事务一直处于等待状态。<br><strong>死锁</strong>：是两个事务执行时各自锁上一个对象，后又申请封锁对方的资源，导致两个事务互相等待。</p>
+<p><strong>活锁解决</strong>：先来后到<br><strong>死锁解决</strong>：</p>
+<ul>
+<li>一次性将所需资源全部上锁</li>
+<li>事务超时判定死锁</li>
+<li>等待图法，找到死锁环，选一个代价最小的事务终止，解除死锁，后重新执行这个事务。</li>
+</ul>
+<h1 id="串行化调度"><a href="#串行化调度" class="headerlink" title="串行化调度"></a>串行化调度</h1><blockquote>
+<p>若多个事务严格按前后循序执行，T1执行完，T2开始，则这些事务属于<code>串行化调度</code>。    </p>
+</blockquote>
+<ul>
+<li>虽然T1和T2的执行顺序可能导致结果不同，但都认为串行化调度的结果是正确的。</li>
+<li>如果存在一个并发的调度，其运行结果属于某个串行化调度，则称这个并发的调度是<code>可串行化</code>的，并且定义只有一个调度是<code>可串行化</code>调度，才认为这个调度是正确的。</li>
+</ul>
+<h2 id="冲突可串行化"><a href="#冲突可串行化" class="headerlink" title="冲突可串行化"></a>冲突可串行化</h2><h3 id="冲突"><a href="#冲突" class="headerlink" title="冲突"></a>冲突</h3><blockquote>
+<p>不同事务对同一个数据的<code>读写</code>操作和<code>写写</code>操作认为是两对冲突操作。<br>对同一数据的<code>读读</code>操作不为冲突操作,同时对不同数据的操作也不为冲突操作。    </p>
+</blockquote>
+<p><code>读写</code>冲突例子：Ri(x) 和 Wj(x)  ：事务i读取x和事务j写入x<br><code>写写</code>冲突例子：Wi(x) 和 Wj(x)  ：事务i写入x和事务j写入x  </p>
+<h3 id="交换条件"><a href="#交换条件" class="headerlink" title="交换条件"></a>交换条件</h3><ul>
+<li>冲突操作不能交换</li>
+<li>同一事务内的操作不能交换</li>
+</ul>
+<p>一个调度在满足交换条件的情况下，若能转变成串行化调度，则认为这个调度是<code>冲突可串行化的</code></p>
+<ul>
+<li>若调度是冲突可串行化的，那一定是可串行化的调度</li>
+<li>若调度是可串行化的，则不一定是冲突可串行化的</li>
+</ul>
+<p>例1：r1(A)w1(A)r2(A)<code>w2(A)r1(B)w1(B)</code>r2(B)w2(B)<br>高亮处第一次交换：r1(A)w1(A)<code>r2(A)r1(B)w1(B)</code>w2(A)r2(B)w2(B)<br>高亮处第二次交换：r1(A)w1(A)r1(B)w1(B)r2(A)w2(A)r2(B)w2(B)<br>交换完毕：事务1的操作全在事务2的前面，因此是可串行化的  </p>
+<h1 id="两段锁-TwoPhase-Locking"><a href="#两段锁-TwoPhase-Locking" class="headerlink" title="两段锁(TwoPhase Locking)"></a>两段锁(TwoPhase Locking)</h1><blockquote>
+<p>两阶段锁，简称2PL。两阶段分别为<code>扩展阶段</code>和<code>收缩阶段</code>，扩展阶段只能给数据上锁，收缩阶段只能释放锁，进入收缩阶段后不能回到扩展阶段。</p>
+</blockquote>
+<ul>
+<li>若并发的所有事务满足两段锁协议，则这些事务的任何并发调度策略都是可串行化的。  </li>
+<li>可串行化不一定满足两段锁协议</li>
+<li></li>
+</ul>
+<h1 id="封锁的粒度-granularity"><a href="#封锁的粒度-granularity" class="headerlink" title="封锁的粒度(granularity)"></a>封锁的粒度(granularity)</h1><blockquote>
+<p>封锁对象的大小称为封锁粒度,封锁粒度与系统的并发度和并发控制开销密切相关。封锁对象越大，并发度越小，开销小，封锁对象小，并发度高，开销也大。  </p>
+</blockquote>
+<h2 id="多粒度封锁"><a href="#多粒度封锁" class="headerlink" title="多粒度封锁"></a>多粒度封锁</h2><ul>
+<li><code>多粒度树</code>的根节点是整个数据库表示最大的粒度，往下粒度减小，比如数据库、数据分区、数据文件、数据记录。  </li>
+<li><code>多粒度封锁协议</code>允许多粒度树中每个结点被独立地加锁。对一个结点加锁意味着这个结点的所有子结点也被加了同类型的锁。</li>
+<li><code>显式封锁</code>指直接加了锁的结点</li>
+<li><code>隐式封锁</code>指由于上级结点加了锁，导致该结点被锁</li>
+<li>加新锁，需要检查上级结点和下级结点是否有冲突的锁，导致效率低下，因此引入<code>意向锁</code>（intention lock），这样加锁后就不用逐个检查下一结点的显示封锁。</li>
+<li>给一个结点加意向锁，表示该结点的下层结点正在被加锁，给任意结点加锁前，先给其上层结点加相应意向锁：<code>IS（意向共享锁）</code>、<code>IX（意向排它锁）</code>、<code>SIX(共享意向排他锁)</code></li>
+<li>加锁过程自上而下，释放锁自下而上。</li>
+</ul>
+<p>各个锁的相容性：</p>
+<table>
+<thead>
+<tr>
+<th>T1&#x2F;T2</th>
+<th>S</th>
+<th>X</th>
+<th>IS</th>
+<th>IX</th>
+<th>SIX</th>
+<th>-</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S</td>
+<td>Y</td>
+<td>N</td>
+<td>Y</td>
+<td>N</td>
+<td>N</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>X</td>
+<td>N</td>
+<td>N</td>
+<td>N</td>
+<td>N</td>
+<td>N</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>IS</td>
+<td>Y</td>
+<td>N</td>
+<td><strong>Y</strong></td>
+<td><strong>Y</strong></td>
+<td><strong>Y</strong></td>
+<td>Y</td>
+</tr>
+<tr>
+<td>IX</td>
+<td>N</td>
+<td>N</td>
+<td><strong>Y</strong></td>
+<td><strong>Y</strong></td>
+<td><strong>N</strong></td>
+<td>Y</td>
+</tr>
+<tr>
+<td>SIX</td>
+<td>N</td>
+<td>N</td>
+<td><strong>Y</strong></td>
+<td><strong>N</strong></td>
+<td><strong>N</strong></td>
+<td>Y</td>
+</tr>
+<tr>
+<td>-</td>
+<td>Y</td>
+<td>Y</td>
+<td>Y</td>
+<td>Y</td>
+<td>Y</td>
+<td>Y</td>
+</tr>
+</tbody></table>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><table>
+<thead>
+<tr>
+<th>事务技术</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>恢复技术</td>
+<td>保证原子性和持续性</td>
+</tr>
+<tr>
+<td>并发控制</td>
+<td>保证一致性和隔离性</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>转储方式</th>
+<th>动态转储状态</th>
+<th>静态转储状态</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>海量转储</td>
+<td>动态海量转储</td>
+<td>静态海量转储</td>
+</tr>
+<tr>
+<td>增量转储</td>
+<td>动态增量转储</td>
+<td>静态海量转储</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>协议</th>
+<th>一级封锁协议</th>
+<th>二级封锁协议</th>
+<th>三级封锁协议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>事务结束释放X锁</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>读取结束释放S锁</td>
+<td>-</td>
+<td>√</td>
+<td>×</td>
+</tr>
+<tr>
+<td>事务结束释放S锁</td>
+<td>-</td>
+<td>×</td>
+<td>√</td>
+</tr>
+<tr>
+<td>丢失修改</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>不可重复读</td>
+<td>×</td>
+<td>×</td>
+<td>√</td>
+</tr>
+<tr>
+<td>读”脏”数据</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+</tr>
+</tbody></table>
+</div><div class="p-copyright"><blockquote><div class="p-copyright-author"><span class="p-copyright-key">本文作者：</span><span class="p-copytight-value"><a href="mailto:litreily@163.com">Marig_Weizhi</a></span></div><div class="p-copyright-link"><span class="p-copyright-key">本文链接：</span><span class="p-copytight-value"><a href="/2022/10/26/databse-transaction/">http://marigweizhi.github.io/2022/10/26/databse-transaction/</a></span></div><div class="p-copyright-note"><span class="p-copyright-key">版权声明：</span><span class="p-copytight-value">本博客所有文章除特殊声明外，均采用<a rel="nofollow" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/"> CC BY-NC 4.0 </a>许可协议。转载请注明出处 <a href="http://marigweizhi.github.io">Marig_Weizhi的博客</a>！</span></div></blockquote></div></article><div class="p-info box"><span class="p-tags"><i class="fa fa-tag"></i><a href="/tags/database/">database</a></span></div><aside id="toc"><div class="toc-title">目录</div><nav><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1"><span class="toc-number">1.</span> <span class="toc-text">事务</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E7%9A%84ACID%E5%B1%9E%E6%80%A7"><span class="toc-number">1.1.</span> <span class="toc-text">事务的ACID属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%AD%90%E6%80%A7-Atomicity"><span class="toc-number">1.2.</span> <span class="toc-text">原子性(Atomicity)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7-Consistency"><span class="toc-number">1.3.</span> <span class="toc-text">一致性(Consistency)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9A%94%E7%A6%BB%E6%80%A7-Isolation"><span class="toc-number">1.4.</span> <span class="toc-text">隔离性(Isolation)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%81%E7%BB%AD%E6%80%A7-Durability"><span class="toc-number">1.5.</span> <span class="toc-text">持续性(Durability)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%85%E9%9A%9C%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.6.</span> <span class="toc-text">故障类型</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E5%9C%A8%E7%A8%8B%E5%BA%8F%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">事务在程序中的使用方法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%99%BB%E8%AE%B0%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6"><span class="toc-number">2.1.</span> <span class="toc-text">登记日志文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%81%A2%E5%A4%8D"><span class="toc-number">2.2.</span> <span class="toc-text">恢复</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E8%BD%AC%E5%82%A8"><span class="toc-number">2.2.1.</span> <span class="toc-text">数据转储</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E6%95%85%E9%9A%9C%E7%9A%84%E6%81%A2%E5%A4%8D"><span class="toc-number">2.2.2.</span> <span class="toc-text">事务故障的恢复</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E6%95%85%E9%9A%9C%E7%9A%84%E6%81%A2%E5%A4%8D"><span class="toc-number">2.2.3.</span> <span class="toc-text">系统故障的恢复</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8B%E8%B4%A8%E6%95%85%E9%9A%9C%E7%9A%84%E6%81%A2%E5%A4%8D"><span class="toc-number">2.2.4.</span> <span class="toc-text">介质故障的恢复</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A3%80%E6%9F%A5%E7%82%B9"><span class="toc-number">2.2.5.</span> <span class="toc-text">检查点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A3%80%E6%9F%A5%E7%82%B9%E5%86%85%E5%AE%B9"><span class="toc-number">2.2.5.1.</span> <span class="toc-text">检查点内容</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%A6%E6%A3%80%E6%9F%A5%E7%82%B9%E7%9A%84%E6%81%A2%E5%A4%8D"><span class="toc-number">2.2.6.</span> <span class="toc-text">带检查点的恢复</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6"><span class="toc-number">2.3.</span> <span class="toc-text">并发控制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%A2%E5%A4%B1%E4%BF%AE%E6%94%B9"><span class="toc-number">2.3.1.</span> <span class="toc-text">丢失修改</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB"><span class="toc-number">2.3.2.</span> <span class="toc-text">不可重复读</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E2%80%9D%E8%84%8F%E2%80%9D%E6%95%B0%E6%8D%AE"><span class="toc-number">2.3.3.</span> <span class="toc-text">读”脏”数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%81%E9%94%81"><span class="toc-number">2.4.</span> <span class="toc-text">封锁</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8E%92%E5%AE%83%E9%94%81%EF%BC%88%E5%86%99%E9%94%81%E3%80%81X%E9%94%81%EF%BC%89"><span class="toc-number">2.4.0.1.</span> <span class="toc-text">排它锁（写锁、X锁）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B1%E4%BA%AB%E9%94%81%EF%BC%88%E8%AF%BB%E9%94%81%E3%80%81S%E9%94%81%EF%BC%89"><span class="toc-number">2.4.0.2.</span> <span class="toc-text">共享锁（读锁、S锁）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E7%BA%A7%E5%B0%81%E9%94%81%E5%8D%8F%E8%AE%AE"><span class="toc-number">2.4.1.</span> <span class="toc-text">一级封锁协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E7%BA%A7%E5%B0%81%E9%94%81%E5%8D%8F%E8%AE%AE"><span class="toc-number">2.4.2.</span> <span class="toc-text">二级封锁协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E7%BA%A7%E5%B0%81%E9%94%81%E5%8D%8F%E8%AE%AE"><span class="toc-number">2.4.3.</span> <span class="toc-text">三级封锁协议</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%BB%E9%94%81%E6%B4%BB%E9%94%81"><span class="toc-number">2.5.</span> <span class="toc-text">死锁活锁</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%B2%E8%A1%8C%E5%8C%96%E8%B0%83%E5%BA%A6"><span class="toc-number">3.</span> <span class="toc-text">串行化调度</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%B2%E7%AA%81%E5%8F%AF%E4%B8%B2%E8%A1%8C%E5%8C%96"><span class="toc-number">3.1.</span> <span class="toc-text">冲突可串行化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%B2%E7%AA%81"><span class="toc-number">3.1.1.</span> <span class="toc-text">冲突</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%A4%E6%8D%A2%E6%9D%A1%E4%BB%B6"><span class="toc-number">3.1.2.</span> <span class="toc-text">交换条件</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%A4%E6%AE%B5%E9%94%81-TwoPhase-Locking"><span class="toc-number">4.</span> <span class="toc-text">两段锁(TwoPhase Locking)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B0%81%E9%94%81%E7%9A%84%E7%B2%92%E5%BA%A6-granularity"><span class="toc-number">5.</span> <span class="toc-text">封锁的粒度(granularity)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E7%B2%92%E5%BA%A6%E5%B0%81%E9%94%81"><span class="toc-number">5.1.</span> <span class="toc-text">多粒度封锁</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol></nav></aside></div><section class="p-ext"><div class="l-pager l-pager-dtl box"><a class="prev" href="/2024/04/08/hello-world/">&lt; Hello World</a><a class="next" href="/2022/10/16/database-principles/">数据库笔记5-数据库基本原理 &gt;</a></div></section><footer><p>Copyright © 2016 - 2024 <a href="/." rel="nofollow">未知のBlogger</a> | <strong><a rel="nofollow" target="_blank" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></strong><br><span id="busuanzi_container_site_uv"><i class="fa fa-user"></i><span id="busuanzi_value_site_uv"></span></span> <span id="busuanzi_container_site_pv"><i class="fa fa-eye"></i><span id="busuanzi_value_site_pv"></span></span> | Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a>Theme with<a rel="nofollow" target="_blank" href="https://github.com/litreily/snark-hexo"> snark.</a></p></footer></div></div></div><script type="text/javascript" src="/js/search.js"></script><script type="text/javascript" src="/js/top.js"></script><script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+    search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.1" async></script></body></html>
